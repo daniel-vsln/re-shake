@@ -1,0 +1,119 @@
+/* ===========================================
+   Tag.module.css
+   Pill for ingredients & filters. Can be selectable, removable, colored.
+   =========================================== */
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 7px 12px;
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-1);
+  color: var(--text-secondary);
+
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-normal);
+  white-space: nowrap;
+
+  cursor: default;
+  user-select: none;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-spring),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+/* Selectable affordance */
+.selectable {
+  cursor: pointer;
+}
+.selectable:hover {
+  background: var(--color-surface-2);
+  color: var(--text-primary);
+}
+
+/* Selected state */
+.selected {
+  background: var(--color-secondary);
+  color: var(--text-inverse);
+  border-color: var(--color-ink);
+  box-shadow: var(--shadow-pop-sm);
+}
+.selected:hover {
+  background: var(--color-secondary-hover);
+}
+
+/* Sizes */
+.sm {
+  padding: 4px 9px;
+  font-size: 11px;
+  gap: 4px;
+}
+.md {
+  padding: 7px 12px;
+  font-size: var(--text-small);
+}
+.lg {
+  padding: 9px 16px;
+  font-size: var(--text-body);
+}
+
+/* Color dot (ingredient hue) */
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-ink);
+  flex-shrink: 0;
+}
+
+/* Trailing icon (×, +, ✓) */
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: -3px;
+  margin-left: 2px;
+
+  font-size: 11px;
+  font-weight: var(--weight-black);
+  color: currentColor;
+  opacity: 0.55;
+  cursor: pointer;
+}
+.action:hover {
+  opacity: 1;
+}
+
+.removable .action {
+  color: currentColor;
+}
+
+/* Disabled */
+.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Add-state for "suggestion" tags (the + chip) */
+.add .action {
+  color: var(--color-success);
+  opacity: 1;
+  font-size: 13px;
+}
+
+.icon {
+  font-size: 1em;
+  line-height: 1;
+}

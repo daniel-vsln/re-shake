@@ -1,0 +1,162 @@
+/* ===========================================
+   ProgressBar.module.css
+   Three variants: continuous | segmented | stepped (with labels)
+   =========================================== */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-body);
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.label {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.value {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+  color: var(--color-secondary);
+}
+
+/* ---------- continuous bar ---------- */
+.track {
+  position: relative;
+  height: 12px;
+  background: var(--color-surface-1);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--duration-slow) var(--ease-emphasized);
+}
+
+.sm .track {
+  height: 8px;
+}
+.lg .track {
+  height: 18px;
+}
+
+/* color variants */
+.fillSuccess {
+  background: linear-gradient(90deg, var(--color-success), #d2f59c);
+}
+.fillWarning {
+  background: linear-gradient(90deg, var(--color-warning), #ffec92);
+}
+.fillAccent {
+  background: var(--gradient-accent);
+}
+
+/* ---------- segmented (e.g. lives) ---------- */
+.segmented {
+  display: flex;
+  gap: 4px;
+}
+.segment {
+  flex: 1;
+  height: 10px;
+  background: var(--color-surface-1);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+}
+.segmentOn {
+  background: var(--gradient-primary);
+}
+
+/* ---------- stepped (training stepper) ---------- */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+.bullet {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--color-ink);
+  background: var(--color-surface-1);
+  color: var(--text-tertiary);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+  box-shadow: var(--shadow-pop-sm);
+
+  transition:
+    background var(--duration-normal) var(--ease-spring),
+    transform var(--duration-normal) var(--ease-spring),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.stepActive .bullet {
+  background: var(--gradient-primary);
+  color: var(--text-inverse);
+  transform: scale(1.12);
+}
+
+.stepDone .bullet {
+  background: var(--color-success);
+  color: var(--text-inverse);
+}
+
+.stepName {
+  font-size: 10px;
+  font-weight: var(--weight-bold);
+  color: var(--text-tertiary);
+  letter-spacing: var(--tracking-normal);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.stepActive .stepName {
+  color: var(--text-primary);
+}
+.stepDone .stepName {
+  color: var(--color-success);
+}
+
+.connector {
+  flex: 0 0 auto;
+  height: 2px;
+  width: 16px;
+  background: var(--border-default);
+  border-radius: 2px;
+  margin-bottom: 16px;
+}
+.connectorDone {
+  background: var(--color-success);
+}

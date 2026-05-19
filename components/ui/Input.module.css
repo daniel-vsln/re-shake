@@ -1,0 +1,208 @@
+/* ===========================================
+   Input.module.css
+   Text / Number / Search + UnitInput.
+   States: default | filled | success | error | disabled
+   =========================================== */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-body);
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.label {
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.required {
+  color: var(--color-primary);
+  font-weight: var(--weight-black);
+}
+
+.statusInline {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: var(--weight-black);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.statusInline.ok {
+  color: var(--color-success);
+}
+.statusInline.err {
+  color: var(--color-error);
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background: var(--color-surface-1);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+
+.control:focus-within {
+  border-color: var(--color-secondary);
+  background: var(--color-surface-2);
+}
+
+.filled {
+  border-color: var(--color-secondary);
+}
+.success {
+  border-color: var(--color-success);
+}
+.error {
+  border-color: var(--color-error);
+}
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.input {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  min-width: 0;
+}
+.input::placeholder {
+  color: var(--text-muted);
+  font-weight: var(--weight-medium);
+}
+
+.input[type='number']::-webkit-inner-spin-button,
+.input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.leadingIcon,
+.trailingIcon {
+  font-size: 16px;
+  color: var(--text-tertiary);
+  display: inline-flex;
+  align-items: center;
+}
+
+.suffix {
+  padding: 4px 8px;
+  background: var(--color-ink);
+  color: var(--color-secondary);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+}
+
+.helper {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: var(--weight-semibold);
+}
+.helperError {
+  color: var(--color-error);
+}
+
+/* multiline */
+.multiline {
+  align-items: flex-start;
+  min-height: 80px;
+}
+.multiline .input {
+  resize: vertical;
+  line-height: var(--leading-normal);
+  min-height: 56px;
+}
+
+/* search variant */
+.search .leadingIcon {
+  color: var(--text-secondary);
+}
+.clear {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-surface-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: var(--weight-black);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+/* ============== UnitInput ============== */
+.unitInput {
+  display: flex;
+  align-items: stretch;
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-1);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+.unitInput:focus-within {
+  border-color: var(--color-secondary);
+}
+.unitInput.success {
+  border-color: var(--color-success);
+}
+.unitInput.error {
+  border-color: var(--color-error);
+}
+
+.unitInput .input {
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-black);
+  font-feature-settings: 'tnum' 1;
+  text-align: right;
+}
+
+.unitDivider {
+  width: 2px;
+  background: var(--border-default);
+}
+
+.unitLabel {
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  background: var(--color-ink);
+  color: var(--color-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-wide);
+  text-transform: lowercase;
+}

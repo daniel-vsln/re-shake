@@ -1,0 +1,111 @@
+/* ===========================================
+   Badge.module.css
+   Three tones: category | difficulty | status
+   =========================================== */
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  padding: 4px 10px;
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-full);
+
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  box-shadow: var(--shadow-pop-sm);
+  color: var(--text-inverse);
+}
+
+.icon {
+  font-size: 0.95em;
+  line-height: 1;
+}
+
+/* ---------- CATEGORY ---------- */
+.spirit {
+  background: #ffd23f;
+} /* yellow */
+.mocktail {
+  background: #a8e063;
+} /* green */
+.wine {
+  background: #ff5b9e;
+} /* pink */
+.beer {
+  background: #ffb74d;
+} /* amber */
+.classic {
+  background: #7a5cff;
+  color: var(--color-cream);
+}
+.modern {
+  background: #6ec5e9;
+}
+.tiki {
+  background: #ff9b3a;
+}
+.afterDinner {
+  background: #b07a4f;
+  color: var(--color-cream);
+}
+
+/* ---------- DIFFICULTY ---------- */
+.easy {
+  background: #a8e063;
+}
+.medium {
+  background: #ffd23f;
+}
+.hard {
+  background: #ff5b9e;
+}
+
+.dots {
+  display: inline-flex;
+  gap: 2px;
+  margin-right: 2px;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  opacity: 0.25;
+}
+.dotOn {
+  opacity: 1;
+}
+
+/* ---------- STATUS (training results) ---------- */
+.correct {
+  background: var(--color-success);
+  color: var(--text-inverse);
+}
+.close {
+  background: var(--color-warning);
+  color: var(--text-inverse);
+}
+.wrong {
+  background: var(--color-error);
+  color: var(--text-inverse);
+}
+.locked {
+  background: var(--color-surface-2);
+  color: var(--text-tertiary);
+  border-color: var(--border-default);
+  box-shadow: none;
+}
+
+/* ---------- size compact ---------- */
+.compact {
+  padding: 2px 7px;
+  font-size: 9px;
+  box-shadow: none;
+}

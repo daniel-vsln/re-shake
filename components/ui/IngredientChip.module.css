@@ -1,0 +1,180 @@
+/* ============================================
+   IngredientChip.module.css
+   Tappable chip for Training Step 1 ("pick ingredients").
+
+   States layered (in order of precedence):
+     default → hover → selected → correct → wrong
+   ============================================ */
+
+.root {
+  --chip-bg: var(--color-surface-1);
+  --chip-border: var(--border-default);
+  --chip-color: var(--text-secondary);
+  --chip-shadow: none;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 14px 10px 10px;
+  background: var(--chip-bg);
+  color: var(--chip-color);
+  border: 2px solid var(--chip-border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--chip-shadow);
+
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-normal);
+  white-space: nowrap;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-spring),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.root:hover {
+  --chip-bg: var(--color-surface-2);
+  --chip-color: var(--text-primary);
+}
+.root:active {
+  transform: scale(0.96);
+}
+.root:focus-visible {
+  outline: none;
+  box-shadow: var(--chip-shadow), var(--ring-focus);
+}
+
+.swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--color-ink);
+  background: var(--chip-swatch, var(--color-surface-3));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+  position: relative;
+}
+
+.label {
+  line-height: 1;
+}
+
+/* indicator on the right (only on result states) */
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-ink);
+  font-size: 10px;
+  font-weight: var(--weight-black);
+  margin-left: 4px;
+  margin-right: -4px;
+  flex-shrink: 0;
+}
+
+/* ---------- states ---------- */
+
+.selected {
+  --chip-bg: var(--color-secondary);
+  --chip-border: var(--color-ink);
+  --chip-color: var(--text-inverse);
+  --chip-shadow: var(--shadow-pop-sm);
+}
+.selected:hover {
+  --chip-bg: var(--color-secondary-hover);
+}
+
+.correct {
+  --chip-bg: var(--color-success);
+  --chip-border: var(--color-ink);
+  --chip-color: var(--text-inverse);
+  --chip-shadow: var(--shadow-pop-sm);
+  animation: chipPop var(--duration-normal) var(--ease-spring);
+}
+.correct .indicator {
+  background: var(--color-bg-elevated);
+  color: var(--color-success);
+}
+
+.wrong {
+  --chip-bg: var(--color-error);
+  --chip-border: var(--color-ink);
+  --chip-color: var(--text-inverse);
+  --chip-shadow: var(--shadow-pop-sm);
+  animation: chipShake var(--duration-normal) var(--ease-standard);
+}
+.wrong .indicator {
+  background: var(--color-bg-elevated);
+  color: var(--color-error);
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+/* sizes */
+.sm {
+  padding: 6px 11px 6px 7px;
+  font-size: 11px;
+  gap: 6px;
+}
+.sm .swatch {
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+}
+
+.lg {
+  padding: 13px 18px 13px 13px;
+  font-size: var(--text-body);
+  gap: 12px;
+}
+.lg .swatch {
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+}
+
+/* animations */
+@keyframes chipPop {
+  0% {
+    transform: scale(0.92);
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes chipShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
