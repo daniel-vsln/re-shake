@@ -1,0 +1,147 @@
+/* ============================================
+   OnboardingChecklist.module.css
+   ============================================ */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.title {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.rule {
+  flex: 1;
+  height: 2px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+}
+.count {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+  color: var(--color-secondary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---------- step ---------- */
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: var(--color-surface-1);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-spring);
+}
+.step:hover {
+  background: var(--color-surface-2);
+}
+.step:active {
+  transform: scale(0.99);
+}
+
+.stepDone {
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+}
+.stepActive {
+  background: var(--color-warning-bg);
+  border-color: var(--color-warning);
+}
+.stepLocked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.icon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-ink);
+  background: var(--iconBg, var(--color-surface-3));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-pop-sm);
+}
+
+/* number badge on top of icon */
+.numberBadge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  color: var(--color-secondary);
+  border: 1.5px solid var(--color-secondary);
+  font-size: 10px;
+  font-weight: var(--weight-black);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.stepDone .numberBadge {
+  background: var(--color-success);
+  color: var(--text-inverse);
+  border-color: var(--color-ink);
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+.label {
+  font-size: var(--text-body);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.sub {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: var(--weight-semibold);
+  margin-top: 2px;
+}
+
+.chevron {
+  font-size: 18px;
+  font-weight: var(--weight-black);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.stepActive .chevron {
+  color: var(--color-warning);
+}
+.stepDone .chevron {
+  color: var(--color-success);
+}

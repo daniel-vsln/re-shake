@@ -1,0 +1,221 @@
+/* ============================================
+   CocktailCard.module.css
+   Hero card for the Library grid.
+   ============================================ */
+
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-pop-md);
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    transform var(--duration-fast) var(--ease-spring),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.root:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 0 var(--color-ink),
+    0 16px 32px rgba(122, 92, 255, 0.25);
+}
+.root:active {
+  transform: translateY(1px);
+  box-shadow: var(--shadow-pop-sm);
+}
+.root:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-pop-md), var(--ring-focus);
+}
+
+/* ---------- visual hero ---------- */
+.visual {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), transparent 55%),
+    var(--cocktail-hue, var(--color-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 2px solid var(--color-ink);
+  overflow: hidden;
+}
+
+.visual::after {
+  /* sparkle dots pattern */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.06) 1px, transparent 1.5px);
+  background-size: 14px 14px;
+  pointer-events: none;
+}
+
+.emoji {
+  font-size: 56px;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.25));
+  z-index: 1;
+}
+
+/* favorite heart */
+.favBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-bg-elevated);
+  border: 2px solid var(--color-ink);
+  color: var(--text-tertiary);
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-pop-sm);
+  transition:
+    transform var(--duration-fast) var(--ease-spring),
+    color var(--duration-fast) var(--ease-standard);
+}
+.favBtn:hover {
+  transform: scale(1.1);
+}
+.favBtn.favOn {
+  color: var(--color-primary);
+  background: #fff;
+}
+
+/* stars */
+.stars {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 2px;
+}
+.star {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.2);
+  text-shadow: none;
+}
+.starOn {
+  color: var(--color-secondary);
+  text-shadow: 0 1px 0 var(--color-ink);
+}
+
+/* ---------- body ---------- */
+.body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.1;
+  color: var(--text-primary);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-small);
+  color: var(--text-tertiary);
+  font-weight: var(--weight-semibold);
+}
+.metaDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.progress {
+  margin-top: 4px;
+}
+
+/* ---------- SKELETON ---------- */
+.skeleton {
+  pointer-events: none;
+  cursor: default;
+}
+.skeleton:hover {
+  transform: none;
+  box-shadow: var(--shadow-pop-md);
+}
+
+.skVisual {
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(90deg, #2a1f3d 0%, #3a2a52 50%, #2a1f3d 100%);
+  background-size: 200% 100%;
+  animation: skShimmer 1.4s ease-in-out infinite;
+  border-bottom: 2px solid var(--color-ink);
+}
+
+.skBody {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.skLine {
+  height: 14px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, #2a1f3d 0%, #3a2a52 50%, #2a1f3d 100%);
+  background-size: 200% 100%;
+  animation: skShimmer 1.4s ease-in-out infinite;
+}
+.skLineTall {
+  height: 20px;
+  width: 70%;
+}
+.skLineShort {
+  width: 50%;
+}
+.skLineMid {
+  width: 80%;
+  height: 10px;
+}
+.skBar {
+  height: 12px;
+  border-radius: var(--radius-full);
+}
+
+@keyframes skShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

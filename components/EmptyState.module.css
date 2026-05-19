@@ -1,0 +1,105 @@
+/* ============================================
+   EmptyState.module.css
+   Reusable empty-state pattern.
+   ============================================ */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+
+  padding: 28px 20px;
+}
+
+.alignStart {
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* ----- illustration slot ----- */
+.illustration {
+  position: relative;
+  margin-bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* default illustration tile (when only an emoji is passed) */
+.illustrationTile {
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-2xl);
+  background: var(--illBg, var(--gradient-reward));
+  border: 2px dashed var(--color-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  box-shadow: var(--shadow-pop-lg);
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 22px;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4));
+}
+.sparkleTR {
+  top: -6px;
+  right: -6px;
+}
+.sparkleBL {
+  bottom: -2px;
+  left: -10px;
+  font-size: 18px;
+}
+.sparkleTL {
+  top: -4px;
+  left: -8px;
+  font-size: 16px;
+}
+
+/* ----- typography ----- */
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.15;
+  color: var(--text-primary);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.body {
+  font-size: var(--text-body);
+  color: var(--text-tertiary);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-normal);
+  max-width: 320px;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+/* ----- actions ----- */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  width: 100%;
+  max-width: 280px;
+  align-items: center;
+}
+.alignStart .actions {
+  max-width: 320px;
+  align-items: stretch;
+}
+
+/* ----- children (suggestions slot) ----- */
+.extras {
+  margin-top: 28px;
+  width: 100%;
+}
