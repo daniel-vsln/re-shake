@@ -1,0 +1,153 @@
+/* ============================================
+   TrainingLayout.module.css
+   Shell for the 3-step training flow.
+   ============================================ */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: var(--color-bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+/* ---------- HEADER ---------- */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px 14px;
+  position: sticky;
+  top: 0;
+  background: var(--color-bg);
+  z-index: var(--z-sticky);
+  border-bottom: 2px solid var(--border-subtle);
+}
+
+.headerTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.closeBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  border: 2px solid var(--border-default);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: var(--weight-black);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.progressBlock {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progressTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.stepLabel {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.lives {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: var(--weight-black);
+  font-size: var(--text-small);
+  color: var(--color-primary);
+}
+.lifeIcon {
+  font-size: 14px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cocktailName {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.1;
+  margin: 0;
+  color: var(--text-primary);
+  text-wrap: balance;
+}
+
+.blindBadge {
+  background: var(--color-ink);
+  color: var(--color-secondary);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  font-size: var(--text-caption);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.timer {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+  color: var(--color-secondary);
+}
+
+/* ---------- CONTENT ---------- */
+.content {
+  flex: 1;
+  padding: 16px 20px 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ---------- FOOTER ---------- */
+.footer {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-sticky);
+
+  display: flex;
+  gap: 10px;
+  padding: 12px 20px 16px;
+
+  background: linear-gradient(180deg, transparent 0%, var(--color-bg) 30%);
+  border-top: 2px solid var(--border-subtle);
+}
+
+.footer > :first-child {
+  flex: 0 0 auto;
+}
+.footer > :last-child {
+  flex: 1;
+}

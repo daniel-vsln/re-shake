@@ -1,0 +1,121 @@
+/* ============================================
+   Step3Serving.module.css
+   ============================================ */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sectionLabel {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.sectionRule {
+  flex: 1;
+  height: 2px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+}
+.sectionCount {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+  color: var(--color-secondary);
+}
+
+/* ---------- option grid ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.option {
+  background: var(--color-surface-1);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 12px 10px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-spring),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+.option:hover {
+  background: var(--color-surface-2);
+}
+.option:active {
+  transform: scale(0.97);
+}
+.option:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+}
+
+.optionSelected {
+  background: var(--color-secondary);
+  color: var(--text-inverse);
+  border-color: var(--color-ink);
+  box-shadow: var(--shadow-pop-sm);
+}
+.optionSelected:hover {
+  background: var(--color-secondary-hover);
+}
+
+.optionDisabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.optionIcon {
+  font-size: 28px;
+  line-height: 1;
+}
+.optionLabel {
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+  line-height: 1.15;
+  text-align: center;
+}
+.optionSub {
+  font-size: 10px;
+  color: inherit;
+  opacity: 0.75;
+  font-weight: var(--weight-semibold);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* ---------- garnish (chip row, multi-select) ---------- */
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

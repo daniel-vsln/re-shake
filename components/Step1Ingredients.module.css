@@ -1,0 +1,118 @@
+/* ============================================
+   Step1Ingredients.module.css
+   ============================================ */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hintRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.hint {
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  color: var(--text-tertiary);
+}
+.hintCount {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-weight: var(--weight-black);
+  color: var(--color-secondary);
+}
+
+/* ---------- TRAY ---------- */
+.tray {
+  background: var(--color-surface-1);
+  border: 2px dashed var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  min-height: 64px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.trayEmpty {
+  width: 100%;
+  text-align: center;
+  font-size: var(--text-small);
+  color: var(--text-muted);
+  font-weight: var(--weight-semibold);
+  font-style: italic;
+}
+
+/* slot in tray = wraps chip with a remove animation */
+.trayItem {
+  animation: dropIn var(--duration-normal) var(--ease-spring);
+}
+
+@keyframes dropIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ---------- POOL ---------- */
+.poolHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.poolLabel {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.search {
+  margin-top: 4px;
+}
+
+.pool {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* on mobile cluster a little tighter */
+@media (max-width: 480px) {
+  .pool {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+/* keep chip itself stretch nicely */
+.pool > * {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.poolEmpty {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  border: 2px dashed var(--border-default);
+  border-radius: var(--radius-md);
+}
