@@ -193,12 +193,15 @@ export default function TrainingFlowClient({ cocktail }: Props) {
     }
   })
 
+  const NEXT_LABELS = ['Lock in & continue →', 'Pour it & continue →', '🎯 Submit']
+
   return (
     <TrainingLayout
       currentStep={step}
       steps={STEPS}
       cocktailName={cocktail.name}
       canGoNext={canGoNext}
+      nextLabel={NEXT_LABELS[step]}
       onClose={() => router.push(`/library/${cocktail.id}`)}
       onBack={handleBack}
       onNext={handleNext}
@@ -223,6 +226,8 @@ export default function TrainingFlowClient({ cocktail }: Props) {
           measurements={measurements}
           onMeasurementChange={(id, val) => setMeasurements((prev) => ({ ...prev, [id]: val }))}
           tolerance={5}
+          cocktailName={cocktail.name}
+          cocktailEmoji={cocktail.image}
         />
       )}
 

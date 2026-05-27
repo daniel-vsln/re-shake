@@ -1,7 +1,5 @@
 'use client'
 
-import Badge from '@/components/ui/Badge'
-import Button from '@/components/ui/Button'
 import styles from './TrainingResult.module.css'
 
 const s = styles as Record<string, string>
@@ -69,12 +67,23 @@ function compareWithTolerance(
   return 'wrong'
 }
 
-const STATUS_META: Record<ResultStatus, { bg: string; icon: string; label: string; text: string }> =
-  {
-    perfect: { bg: 'var(--color-success)', icon: '✓', label: 'Perfect', text: 'Spot on!' },
-    close: { bg: 'var(--color-warning)', icon: '~', label: 'Close', text: 'Within tolerance' },
-    wrong: { bg: 'var(--color-error)', icon: '✕', label: 'Off', text: 'Beyond tolerance' },
-  }
+const STATUS_META: Record<ResultStatus, { icon: string; color: string; userColor: string }> = {
+  perfect: { icon: '✓', color: 'var(--color-success)', userColor: 'var(--color-success)' },
+  close: { icon: '~', color: 'var(--color-warning)', userColor: 'var(--color-warning)' },
+  wrong: { icon: '✕', color: 'var(--color-error)', userColor: 'var(--color-error)' },
+}
+
+const GREET: [number, string][] = [
+  [90, 'Bartender mode!'],
+  [75, 'Nice pour!'],
+  [50, 'Solid attempt'],
+  [0, 'Try again — you got this'],
+]
+
+function greetText(score: number): string {
+  for (const [min, text] of GREET) if (score >= min) return text
+  return 'Try again'
+}
 
 export default function TrainingResult({
   cocktailName,
@@ -90,184 +99,170 @@ export default function TrainingResult({
   scoreFormat = 'percent',
 }: TrainingResultProps) {
   const starCount = stars != null ? stars : score >= 90 ? 3 : score >= 75 ? 2 : score >= 50 ? 1 : 0
+  const greet = greetText(score)
 
-  const greet =
-    score >= 90
-      ? 'Bartender mode!'
-      : score >= 75
-        ? 'Nice pour!'
-        : score >= 50
-          ? 'Solid attempt'
-          : 'Try again — you got this'
+  const servingOk = serving.every((sv) => sv.value.toLowerCase() === sv.correct.toLowerCase())
+  const servingSummary = serving.map((sv) => `${sv.label}: ${sv.value || '—'}`).join(' · ')
 
   return (
     <div className={s.root}>
-      {/* HERO */}
+      {/* ── HERO ── */}
       <div className={s.hero}>
-        <div className={s.heroBg} aria-hidden="true" />
-        <div className={s.heroEyebrow}>
-          {greet} · {cocktailName}
+        <div className={s.sparkles} aria-hidden="true">
+          <span className={s.sparkle} style={{ top: '12%', left: '8%' }}>
+            ✦
+          </span>
+          <span className={s.sparkle} style={{ top: '20%', right: '10%', fontSize: '22px' }}>
+            ★
+          </span>
+          <span className={s.sparkle} style={{ top: '45%', left: '4%', fontSize: '12px' }}>
+            ✦
+          </span>
         </div>
 
+        <p className={s.greet}>{greet.toUpperCase()}</p>
+
         {scoreFormat === 'percent' ? (
-          <div className={s.heroScore}>
-            <span className={s.pct}>{Math.round(score)}</span>
-            <span className={s.pctSign}>%</span>
+          <div className={s.scoreWrap}>
+            <span className={s.scoreNum}>{Math.round(score)}</span>
+            <span className={s.scorePct}>%</span>
           </div>
         ) : (
-          <div className={s.heroGrade}>{letterGrade(score)}</div>
+          <div className={s.scoreWrap}>
+            <span className={s.scoreNum}>{letterGrade(score)}</span>
+          </div>
         )}
 
-        <div className={s.heroStars} aria-label={`${starCount} of 3 stars`}>
+        <div className={s.stars} aria-label={`${starCount} of 3 stars`}>
           {[0, 1, 2].map((i) => (
-            <span key={i} className={`${s.heroStar} ${i < starCount ? s.heroStarOn : ''}`}>
+            <span key={i} className={i < starCount ? s.starOn : s.starOff}>
               ★
             </span>
           ))}
         </div>
 
         {rewards && (
-          <div className={s.heroBadges}>
+          <div className={s.rewards}>
             {rewards.gems != null && (
-              <Badge tone="status" value="correct">
+              <span
+                className={s.rewardPill}
+                style={{ '--pillColor': 'var(--color-success)' } as React.CSSProperties}
+              >
                 +{rewards.gems} 💎
-              </Badge>
+              </span>
             )}
             {rewards.streak != null && (
-              <Badge tone="status" value="close">
-                🔥 {rewards.streak}
-              </Badge>
+              <span
+                className={s.rewardPill}
+                style={{ '--pillColor': 'var(--color-primary)' } as React.CSSProperties}
+              >
+                🔥 {rewards.streak} streak
+              </span>
             )}
             {rewards.xp != null && (
-              <Badge tone="category" value="spirit">
+              <span
+                className={s.rewardPill}
+                style={{ '--pillColor': 'var(--color-secondary)' } as React.CSSProperties}
+              >
                 +{rewards.xp} XP
-              </Badge>
+              </span>
             )}
           </div>
         )}
-
-        <div className={s.heroSubtitle}>
-          {
-            ingredients.filter(
-              (i) =>
-                (i.status ?? compareWithTolerance(i.userValue, i.correctValue, tolerance)) ===
-                'perfect'
-            ).length
-          }{' '}
-          / {ingredients.length} ingredients spot on
-        </div>
       </div>
 
-      {/* BREAKDOWN */}
+      {/* ── BREAKDOWN ── */}
       <section className={s.section}>
         <div className={s.sectionHeader}>
-          <span className={s.sectionLabel}>Your pour vs the recipe</span>
+          <span className={s.sectionLabel}>YOUR POUR vs THE RECIPE</span>
           <span className={s.sectionRule} />
         </div>
 
-        {ingredients.map((i) => {
-          const status = i.status ?? compareWithTolerance(i.userValue, i.correctValue, tolerance)
-          const meta = STATUS_META[status]
-          const rowCls = [
-            s.row,
-            status === 'perfect' ? s.rowPerfect : '',
-            status === 'close' ? s.rowClose : '',
-            status === 'wrong' ? s.rowWrong : '',
-          ]
-            .filter(Boolean)
-            .join(' ')
+        <div className={s.rows}>
+          {ingredients.map((ing) => {
+            const status =
+              ing.status ?? compareWithTolerance(ing.userValue, ing.correctValue, tolerance)
+            const meta = STATUS_META[status]
 
-          const userColor =
-            status === 'perfect'
-              ? 'var(--color-success)'
-              : status === 'wrong'
-                ? 'var(--color-error)'
-                : 'var(--color-warning)'
-
-          return (
-            <div key={i.id} className={rowCls}>
-              <span
-                className={s.swatch}
-                style={{ '--swatch': i.color ?? 'var(--color-surface-3)' } as React.CSSProperties}
-                aria-hidden="true"
-              >
-                {i.emoji}
-              </span>
-              <div className={s.rowBody}>
-                <div className={s.rowName}>{i.name}</div>
-                <div className={s.rowSub}>
-                  {meta.text} · {meta.label}
-                </div>
-              </div>
-              <div
-                className={s.compare}
-                style={{ '--userColor': userColor } as React.CSSProperties}
-              >
-                <span className={s.userVal}>{i.userValue}</span>
-                <span className={s.arrow}>vs</span>
-                <span className={s.correctVal}>{i.correctValue}</span>
-                <span style={{ color: 'var(--text-muted)', marginLeft: 4 }}>{i.unit}</span>
-              </div>
-              <span
-                className={s.statusPill}
-                style={{ '--statusBg': meta.bg } as React.CSSProperties}
-              >
-                {meta.icon}
-              </span>
-            </div>
-          )
-        })}
-      </section>
-
-      {/* SERVING CHECK */}
-      {serving.length > 0 && (
-        <section className={s.section}>
-          <div className={s.sectionHeader}>
-            <span className={s.sectionLabel}>Serving check</span>
-            <span className={s.sectionRule} />
-          </div>
-          <div className={s.servingGrid}>
-            {serving.map((sv) => {
-              const ok = sv.value.toLowerCase() === sv.correct.toLowerCase()
-              return (
-                <div
-                  key={sv.label}
-                  className={s.servingCard}
+            return (
+              <div key={ing.id} className={s.row}>
+                <span
+                  className={s.rowIcon}
                   style={
-                    {
-                      '--rowBorder': ok ? 'var(--color-success)' : 'var(--color-error)',
-                    } as React.CSSProperties
+                    { background: ing.color ?? 'var(--color-surface-3)' } as React.CSSProperties
                   }
                 >
-                  <span className={s.servingIcon}>{sv.icon ?? (ok ? '✓' : '✕')}</span>
-                  <div>
-                    <div className={s.servingLabel}>{sv.label}</div>
-                    <div className={s.servingValue}>{sv.value || '—'}</div>
+                  {ing.emoji}
+                </span>
+
+                <div className={s.rowBody}>
+                  <span className={s.rowName}>{ing.name}</span>
+                  <div className={s.rowPills}>
+                    <span
+                      className={s.pillYou}
+                      style={{ '--pillYouColor': meta.userColor } as React.CSSProperties}
+                    >
+                      YOU: {ing.userValue} {ing.unit}
+                    </span>
+                    <span className={s.pillOk}>
+                      OK: {ing.correctValue} {ing.unit}
+                    </span>
                   </div>
                 </div>
-              )
-            })}
-          </div>
-        </section>
+
+                <span
+                  className={s.statusCircle}
+                  style={{ '--statusColor': meta.color } as React.CSSProperties}
+                >
+                  {meta.icon}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      </section>
+
+      {/* ── SERVING SUMMARY ── */}
+      {serving.length > 0 && (
+        <div
+          className={s.servingCard}
+          style={
+            {
+              '--servingBorder': servingOk ? 'var(--color-success)' : 'var(--color-error)',
+            } as React.CSSProperties
+          }
+        >
+          <span
+            className={s.servingStatus}
+            style={
+              {
+                '--statusColor': servingOk ? 'var(--color-success)' : 'var(--color-error)',
+              } as React.CSSProperties
+            }
+          >
+            {servingOk ? '✓' : '✕'}
+          </span>
+          <span className={s.servingText}>{servingSummary}</span>
+        </div>
       )}
 
-      {/* ACTIONS */}
+      {/* ── ACTIONS ── */}
       <div className={s.actions}>
         {onNext && (
-          <Button variant="primary" size="lg" fullWidth onClick={onNext}>
-            🎯 Next cocktail
-          </Button>
+          <button type="button" className={s.nextBtn} onClick={onNext}>
+            🎯 Next Cocktail
+          </button>
         )}
         <div className={s.actionsRow}>
           {onTryAgain && (
-            <Button variant="ghost" onClick={onTryAgain} leftIcon="↻">
-              Try again
-            </Button>
+            <button type="button" className={s.ghostBtn} onClick={onTryAgain}>
+              ↺ Try Again
+            </button>
           )}
           {onBackToLibrary && (
-            <Button variant="ghost" onClick={onBackToLibrary} leftIcon="←">
-              Library
-            </Button>
+            <button type="button" className={s.ghostBtn} onClick={onBackToLibrary}>
+              ← Library
+            </button>
           )}
         </div>
       </div>

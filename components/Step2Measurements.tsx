@@ -1,6 +1,5 @@
 'use client'
 
-import { UnitInput } from '@/components/ui/Input'
 import styles from './Step2Measurements.module.css'
 
 const s = styles as Record<string, string>
@@ -23,6 +22,8 @@ interface Step2MeasurementsProps {
   onMeasurementChange: (id: string, value: number | string) => void
   tolerance?: number
   toleranceLabel?: string
+  cocktailName?: string
+  cocktailEmoji?: string
 }
 
 export default function Step2Measurements({
@@ -31,103 +32,84 @@ export default function Step2Measurements({
   onMeasurementChange,
   tolerance,
   toleranceLabel = 'ml',
+  cocktailName,
+  cocktailEmoji = '🍸',
 }: Step2MeasurementsProps) {
-  const filledCount = selectedIngredients.filter(
-    (i) => measurements[i.id] !== undefined && measurements[i.id] !== ''
-  ).length
-  const allFilled = filledCount === selectedIngredients.length
-
-  const adjust = (ingredient: MeasurementSpec, delta: number) => {
-    const cur = Number(measurements[ingredient.id] ?? 0)
-    const step = ingredient.step ?? 1
-    let next = cur + delta * step
-    if (ingredient.min != null) next = Math.max(ingredient.min, next)
-    if (ingredient.max != null) next = Math.min(ingredient.max, next)
-    onMeasurementChange(ingredient.id, next)
-  }
-
   return (
     <div className={s.root}>
-      <div className={s.bannerRow}>
-        <span className={s.bannerCopy}>How much of each? Drag, type, or tap ±.</span>
-        {tolerance != null && (
-          <span className={s.tolerance}>
-            ⚖️ ±{tolerance} {toleranceLabel}
-          </span>
-        )}
-      </div>
+      {/* ── CONTEXT BANNER ── */}
+      {cocktailName && (
+        <div className={s.banner}>
+          <span className={s.bannerEmoji}>{cocktailEmoji}</span>
+          <div className={s.bannerBody}>
+            <span className={s.bannerEyebrow}>HOW MUCH OF EACH?</span>
+            <span className={s.bannerTitle}>{cocktailName}</span>
+          </div>
+          {tolerance != null && (
+            <span className={s.tolerancePill}>
+              ±{tolerance} {toleranceLabel}
+            </span>
+          )}
+        </div>
+      )}
 
+      {/* ── INGREDIENT SLIDER CARDS ── */}
       <div className={s.rows}>
-        {selectedIngredients.map((i) => {
-          const val = measurements[i.id]
-          const isEmpty = val === undefined || val === ''
-          const hasError = !isEmpty && i.max != null && Number(val) > i.max
-          const rowCls = [
-            s.row,
-            !isEmpty && !hasError ? s.rowFilled : '',
-            hasError ? s.rowError : '',
-          ]
-            .filter(Boolean)
-            .join(' ')
+        {selectedIngredients.map((ing) => {
+          const val = measurements[ing.id]
+          const numVal = Number(val ?? 0)
+          const min = ing.min ?? 0
+          const max = ing.max ?? 100
+          const pct = Math.max(0, Math.min(100, ((numVal - min) / (max - min)) * 100))
+          const isFilled = numVal > 0
 
           return (
-            <div key={i.id} className={rowCls}>
-              <span
-                className={s.swatch}
-                style={{ '--swatch': i.color ?? 'var(--color-surface-3)' } as React.CSSProperties}
-                aria-hidden="true"
-              >
-                {i.emoji}
-              </span>
+            <div key={ing.id} className={`${s.card} ${isFilled ? s.cardFilled : ''}`}>
+              <div className={s.cardTop}>
+                <span
+                  className={s.icon}
+                  style={
+                    { background: ing.color ?? 'var(--color-surface-3)' } as React.CSSProperties
+                  }
+                >
+                  {ing.emoji ?? '🫙'}
+                </span>
 
-              <div className={s.meta}>
-                <div className={s.name}>{i.name}</div>
-                <div className={s.unitHint}>{i.hint ?? `Measure in ${i.unit}`}</div>
+                <div className={s.meta}>
+                  <span className={s.name}>{ing.name}</span>
+                  <span className={s.hint}>{ing.hint ?? ing.unit}</span>
+                </div>
+
+                <span className={`${s.valuePill} ${isFilled ? s.valuePillFilled : ''}`}>
+                  <span className={s.valueNum}>{isFilled ? numVal : '—'}</span>
+                  {isFilled && <span className={s.valueUnit}> {ing.unit}</span>}
+                </span>
               </div>
 
-              <div className={s.stepper}>
-                <button
-                  type="button"
-                  className={s.stepBtn}
-                  aria-label={`Decrease ${i.name}`}
-                  onClick={() => adjust(i, -1)}
-                  disabled={Number(val ?? 0) <= (i.min ?? 0)}
-                >
-                  −
-                </button>
-                <button
-                  type="button"
-                  className={s.stepBtn}
-                  aria-label={`Increase ${i.name}`}
-                  onClick={() => adjust(i, +1)}
-                >
-                  +
-                </button>
-              </div>
-
-              <div className={s.valuePill}>
-                <UnitInput
-                  value={val ?? ''}
-                  unit={i.unit}
-                  step={i.step ?? 1}
-                  min={i.min}
-                  max={i.max}
-                  error={hasError ? `Max ${i.max}` : null}
-                  onChange={(v) => onMeasurementChange(i.id, v)}
+              <div className={s.sliderWrap}>
+                <input
+                  type="range"
+                  className={s.slider}
+                  min={min}
+                  max={max}
+                  step={ing.step ?? 1}
+                  value={numVal}
+                  onChange={(e) => onMeasurementChange(ing.id, parseFloat(e.target.value))}
+                  style={{ '--pct': `${pct}%` } as React.CSSProperties}
+                  aria-label={`${ing.name} amount`}
                 />
+                <div className={s.sliderLabels}>
+                  <span>
+                    {min} {ing.unit}
+                  </span>
+                  <span>
+                    {max} {ing.unit}
+                  </span>
+                </div>
               </div>
             </div>
           )
         })}
-      </div>
-
-      <div className={`${s.summary} ${allFilled ? '' : s.summaryWarn}`}>
-        <span className={s.summaryIcon}>{allFilled ? '✓' : '⚠️'}</span>
-        <span>
-          {allFilled
-            ? `All ${filledCount} measurements set — ready to continue.`
-            : `${filledCount} of ${selectedIngredients.length} measurements set.`}
-        </span>
       </div>
     </div>
   )

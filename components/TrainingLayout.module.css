@@ -1,50 +1,43 @@
-/* ============================================
-   TrainingLayout.module.css
-   Shell for the 3-step training flow.
-   ============================================ */
-
 .root {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  min-height: 100dvh;
   background: var(--color-bg);
   color: var(--text-primary);
-  font-family: var(--font-body);
 }
 
-/* ---------- HEADER ---------- */
+/* ── HEADER ── */
 .header {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 16px 20px 14px;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-3);
   position: sticky;
   top: 0;
   background: var(--color-bg);
   z-index: var(--z-sticky);
-  border-bottom: 2px solid var(--border-subtle);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.headerTop {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.closeBtn {
+.navBtn {
   width: 36px;
   height: 36px;
   border-radius: var(--radius-md);
   background: var(--color-surface-2);
-  border: 2px solid var(--border-default);
+  border: 1.5px solid var(--color-border);
   color: var(--text-primary);
-  font-size: 14px;
-  font-weight: var(--weight-black);
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background var(--motion-fast);
+}
+
+.navBtn:hover {
+  background: var(--color-surface-3);
 }
 
 .progressBlock {
@@ -55,99 +48,96 @@
   gap: 6px;
 }
 
-.progressTopRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+.stepLabel {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.stepLabel {
-  font-size: var(--text-caption);
-  font-weight: var(--weight-black);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--text-tertiary);
+.cocktailInline {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.rightSlot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
 }
 
 .lives {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-weight: var(--weight-black);
-  font-size: var(--text-small);
-  color: var(--color-primary);
-}
-.lifeIcon {
-  font-size: 14px;
-}
-
-.title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.cocktailName {
-  font-family: var(--font-display);
-  font-size: var(--text-h3);
-  font-weight: var(--weight-black);
-  letter-spacing: var(--tracking-tight);
-  line-height: 1.1;
-  margin: 0;
+  font-size: var(--text-sm);
   color: var(--text-primary);
-  text-wrap: balance;
 }
 
-.blindBadge {
-  background: var(--color-ink);
-  color: var(--color-secondary);
-  border: 2px solid var(--color-ink);
-  border-radius: var(--radius-full);
-  padding: 4px 10px;
-  font-size: var(--text-caption);
-  font-weight: var(--weight-black);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+.lives strong {
+  font-weight: 800;
+  color: var(--color-primary);
 }
 
 .timer {
-  font-family: var(--font-mono);
-  font-size: var(--text-small);
-  font-weight: var(--weight-black);
+  font-size: var(--text-xs);
+  font-weight: 700;
   color: var(--color-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
-/* ---------- CONTENT ---------- */
+/* ── CONTENT ── */
 .content {
   flex: 1;
-  padding: 16px 20px 96px;
+  padding: var(--space-4) var(--space-4) var(--space-10);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-4);
 }
 
-/* ---------- FOOTER ---------- */
+/* ── FOOTER ── */
 .footer {
   position: sticky;
   bottom: 0;
   z-index: var(--z-sticky);
-
-  display: flex;
-  gap: 10px;
-  padding: 12px 20px 16px;
-
-  background: linear-gradient(180deg, transparent 0%, var(--color-bg) 30%);
-  border-top: 2px solid var(--border-subtle);
+  padding: var(--space-3) var(--space-4) var(--space-5);
+  background: linear-gradient(to bottom, transparent 0%, var(--color-bg) 28%);
 }
 
-.footer > :first-child {
-  flex: 0 0 auto;
+.ctaBtn {
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  border: none;
+  background: linear-gradient(135deg, #a8e063 0%, #ffd23f 100%);
+  color: rgba(0, 0, 0, 0.85);
+  font-size: var(--text-base);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.35);
+  transition:
+    transform var(--motion-fast),
+    box-shadow var(--motion-fast),
+    opacity var(--motion-fast);
 }
-.footer > :last-child {
-  flex: 1;
+
+.ctaBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.35);
+}
+
+.ctaBtn:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+.ctaBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
 }

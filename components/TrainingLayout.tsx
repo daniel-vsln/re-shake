@@ -1,6 +1,5 @@
 'use client'
 
-import Button from '@/components/ui/Button'
 import ProgressBar from '@/components/ui/ProgressBar'
 import styles from './TrainingLayout.module.css'
 
@@ -37,51 +36,47 @@ export default function TrainingLayout({
 }: TrainingLayoutProps) {
   const isLast = currentStep >= steps.length - 1
   const isFirst = currentStep <= 0
+  const progressPct = Math.round(((currentStep + 1) / steps.length) * 100)
 
   return (
     <div className={s.root}>
       <header className={s.header}>
-        <div className={s.headerTop}>
-          <button type="button" className={s.closeBtn} aria-label="Exit training" onClick={onClose}>
-            ×
-          </button>
+        <button
+          type="button"
+          className={s.navBtn}
+          aria-label={isFirst ? 'Exit training' : 'Go back'}
+          onClick={isFirst ? onClose : onBack}
+        >
+          {isFirst ? '×' : '←'}
+        </button>
 
-          <div className={s.progressBlock}>
-            <div className={s.progressTopRow}>
-              <span className={s.stepLabel}>
-                Step {Math.min(currentStep + 1, steps.length)} of {steps.length} ·{' '}
-                {steps[currentStep] ?? 'Done'}
-              </span>
-              {lives != null && (
-                <span className={s.lives}>
-                  {Array.from({ length: lives }).map((_, i) => (
-                    <span key={i} className={s.lifeIcon}>
-                      ❤️
-                    </span>
-                  ))}
-                </span>
-              )}
-              {timer && <span className={s.timer}>{timer}</span>}
-            </div>
-            <ProgressBar variant="stepped" steps={steps} currentStep={currentStep} />
-          </div>
+        <div className={s.progressBlock}>
+          <span className={s.stepLabel}>
+            STEP {Math.min(currentStep + 1, steps.length)} OF {steps.length} ·{' '}
+            {steps[currentStep]?.toUpperCase() ?? 'DONE'}
+            {cocktailName && !blindMode && (
+              <span className={s.cocktailInline}> · {cocktailName}</span>
+            )}
+          </span>
+          <ProgressBar variant="continuous" value={progressPct} />
         </div>
 
-        <div className={s.title}>
-          {!blindMode && cocktailName && <h2 className={s.cocktailName}>{cocktailName}</h2>}
-          {blindMode && <span className={s.blindBadge}>👁 Blind mode · ?</span>}
+        <div className={s.rightSlot}>
+          {lives != null && (
+            <span className={s.lives}>
+              ❤️ <strong>{lives}</strong>
+            </span>
+          )}
+          {timer && <span className={s.timer}>{timer}</span>}
         </div>
       </header>
 
       <main className={s.content}>{children}</main>
 
       <footer className={s.footer}>
-        <Button variant="ghost" onClick={onBack} disabled={isFirst} leftIcon="←">
-          Back
-        </Button>
-        <Button variant="primary" onClick={onNext} disabled={!canGoNext}>
+        <button type="button" className={s.ctaBtn} onClick={onNext} disabled={!canGoNext}>
           {isLast ? '🎯 Submit' : nextLabel}
-        </Button>
+        </button>
       </footer>
     </div>
   )

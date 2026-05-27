@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import IngredientChip from '@/components/ui/IngredientChip'
 import Input from '@/components/ui/Input'
 import styles from './Step1Ingredients.module.css'
 
@@ -24,6 +23,8 @@ interface Step1IngredientsProps {
   blindMode?: boolean
 }
 
+const TRAY_VISIBLE = 3
+
 export default function Step1Ingredients({
   availableIngredients,
   selectedIngredients,
@@ -40,78 +41,111 @@ export default function Step1Ingredients({
     .filter((i): i is IngredientDef => !!i)
 
   const q = query.trim().toLowerCase()
-  const visiblePool = availableIngredients.filter(
+  const poolItems = availableIngredients.filter(
     (i) => !selectedSet.has(i.id) && (!q || i.name.toLowerCase().includes(q))
   )
 
-  const hint = blindMode
-    ? `Pick the ingredients you think belong${expectedCount ? ` (target: ${expectedCount})` : ''}.`
-    : cocktailName
-      ? `Build the recipe for ${cocktailName}.`
-      : `Pick the ingredients.`
+  const trayVisible = selectedDefs.slice(0, TRAY_VISIBLE)
+  const trayOverflow = selectedDefs.length - TRAY_VISIBLE
 
   return (
     <div className={s.root}>
-      <div className={s.hintRow}>
-        <span className={s.hint}>{hint}</span>
-        {expectedCount != null && (
-          <span className={s.hintCount}>
-            {selectedIngredients.length} / {expectedCount}
-          </span>
-        )}
-      </div>
+      {/* ── BLIND MODE BANNER ── */}
+      {blindMode && (
+        <div className={s.blindBanner}>
+          <span className={s.blindIcon}>?</span>
+          <div className={s.blindBody}>
+            <span className={s.blindEyebrow}>BLIND MODE</span>
+            <p className={s.blindTitle}>What&rsquo;s in this drink?</p>
+            {expectedCount && (
+              <span className={s.blindHint}>Hint: {expectedCount} ingredients</span>
+            )}
+          </div>
+        </div>
+      )}
 
-      <div className={s.tray} aria-label="Your picks">
-        {selectedDefs.length === 0 ? (
-          <span className={s.trayEmpty}>Tap chips below to add them here</span>
-        ) : (
-          selectedDefs.map((i) => (
-            <span key={i.id} className={s.trayItem}>
-              <IngredientChip
-                name={i.name}
-                emoji={i.emoji}
-                color={i.color}
-                category={i.category}
-                isSelected
-                onClick={() => onToggle(i.id)}
-              />
+      {/* ── TRAY ── */}
+      <div>
+        <div className={s.trayHeader}>
+          <span className={s.trayLabel}>YOUR PICKS</span>
+          {expectedCount != null && (
+            <span className={s.trayCount}>
+              {selectedIngredients.length} / {expectedCount}
             </span>
-          ))
+          )}
+        </div>
+
+        <div className={s.tray}>
+          {selectedDefs.length === 0 ? (
+            <span className={s.trayEmpty}>Tap chips below to add them here</span>
+          ) : (
+            <>
+              {trayVisible.map((ing) => (
+                <button
+                  key={ing.id}
+                  type="button"
+                  className={s.trayChip}
+                  style={
+                    { '--chip-bg': ing.color ?? 'var(--color-surface-3)' } as React.CSSProperties
+                  }
+                  onClick={() => onToggle(ing.id)}
+                >
+                  {ing.emoji && <span className={s.trayChipEmoji}>{ing.emoji}</span>}
+                  <span className={s.trayChipName}>{ing.name}</span>
+                  <span className={s.trayChipX} aria-hidden="true">
+                    ×
+                  </span>
+                </button>
+              ))}
+              {trayOverflow > 0 && <span className={s.trayMore}>+{trayOverflow} more</span>}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* ── POOL ── */}
+      <div>
+        <div className={s.poolHeader}>
+          <span className={s.poolLabel}>TAP TO ADD · {poolItems.length} OPTIONS</span>
+        </div>
+
+        {availableIngredients.length > 8 && (
+          <div className={s.search}>
+            <Input
+              type="search"
+              placeholder="Search ingredients…"
+              value={query}
+              onChange={setQuery}
+              onClear={() => setQuery('')}
+            />
+          </div>
         )}
-      </div>
 
-      <div className={s.poolHeader}>
-        <span className={s.poolLabel}>
-          Tap to add · {visiblePool.length} option{visiblePool.length === 1 ? '' : 's'}
-        </span>
-      </div>
-
-      <div className={s.search}>
-        <Input
-          type="search"
-          placeholder="Search ingredients…"
-          value={query}
-          onChange={setQuery}
-          onClear={() => setQuery('')}
-        />
-      </div>
-
-      <div className={s.pool}>
-        {visiblePool.length === 0 ? (
+        {poolItems.length === 0 ? (
           <div className={s.poolEmpty}>
             {q ? `No ingredients match "${query}"` : 'Nothing left to add'}
           </div>
         ) : (
-          visiblePool.map((i) => (
-            <IngredientChip
-              key={i.id}
-              name={i.name}
-              emoji={i.emoji}
-              color={i.color}
-              category={i.category}
-              onClick={() => onToggle(i.id)}
-            />
-          ))
+          <div className={s.grid}>
+            {poolItems.map((ing) => (
+              <button
+                key={ing.id}
+                type="button"
+                className={s.tile}
+                onClick={() => onToggle(ing.id)}
+              >
+                <span
+                  className={s.tileIcon}
+                  style={
+                    { background: ing.color ?? 'var(--color-surface-3)' } as React.CSSProperties
+                  }
+                >
+                  {ing.emoji ?? '🫙'}
+                </span>
+                <span className={s.tileName}>{ing.name}</span>
+              </button>
+            ))}
+          </div>
         )}
       </div>
     </div>
