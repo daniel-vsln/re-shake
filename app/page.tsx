@@ -5,8 +5,8 @@ import styles from './page.module.css'
 const s = styles as Record<string, string>
 
 const IMAGES = [
-  1, 2, 221, 222, 223, 3, 4, 5, 55, 56, 566, 567, 57, 58, 6, 661, 662, 663, 664, 665, 666, 667, 61,
-  7, 8, 9,
+  1, 2, 221, 222, 223, 3, 4, 5, 51, 55, 56, 566, 567, 57, 58, 6, 661, 662, 663, 664, 665, 666, 667,
+  61, 7, 8, 9,
 ]
 
 export default function Home() {
