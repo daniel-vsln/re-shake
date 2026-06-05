@@ -4,7 +4,7 @@ import styles from './page.module.css'
 
 const s = styles as Record<string, string>
 
-const IMAGES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+const IMAGES = [1, 2, 3, 4, 5, 6, 61, 7, 8, 9]
 
 export default function Home() {
   return (
