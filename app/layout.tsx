@@ -9,8 +9,8 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  title: 're:shake',
-  description: 'Interactive cocktail recipe trainer to keep your mixology skills sharp.',
+  title: '0506?',
+  description: 'В бар!',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
