@@ -2,9 +2,14 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
-  padding: var(--space-6) var(--space-4) var(--space-10);
+  padding: var(--space-4) var(--space-4) var(--space-10);
   max-width: 480px;
   margin: 0 auto;
+}
+
+.topBar {
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* ── HERO ── */

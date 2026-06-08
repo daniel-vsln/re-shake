@@ -1,5 +1,6 @@
 'use client'
 
+import AvatarButton from '@/components/AvatarButton'
 import styles from './TrainingResult.module.css'
 
 const s = styles as Record<string, string>
@@ -106,6 +107,10 @@ export default function TrainingResult({
 
   return (
     <div className={s.root}>
+      <div className={s.topBar}>
+        <AvatarButton inline />
+      </div>
+
       {/* ── HERO ── */}
       <div className={s.hero}>
         <div className={s.sparkles} aria-hidden="true">

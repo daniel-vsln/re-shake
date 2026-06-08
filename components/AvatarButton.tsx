@@ -48,7 +48,8 @@ export default function AvatarButton({ inline = false }: Props) {
     const isHidden =
       HIDDEN_ROUTES.includes(pathname) ||
       pathname === '/library' ||
-      pathname.startsWith('/library/')
+      pathname.startsWith('/library/') ||
+      pathname.startsWith('/train/')
     if (isHidden) return null
     if (!ready) return <div className={s.placeholder} />
   }
