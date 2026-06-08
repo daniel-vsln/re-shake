@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Space_Grotesk } from 'next/font/google'
+import AvatarButton from '@/components/AvatarButton'
 import './globals.css'
 
 const spaceGrotesk = Space_Grotesk({
@@ -9,14 +10,17 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  title: '0506?',
-  description: 'В бар!',
+  title: 're:shake',
+  description: 'Train your cocktail craft — one pour at a time',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={spaceGrotesk.variable}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <AvatarButton />
+      </body>
     </html>
   )
 }
