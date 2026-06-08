@@ -40,6 +40,29 @@
   letter-spacing: 0.02em;
 }
 
+/* inline variant — sits inside an existing nav row, no absolute positioning */
+.btnInline {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition:
+    border-color var(--motion-fast),
+    background var(--motion-fast);
+}
+
+.btnInline:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
 .placeholder {
   position: absolute;
   top: var(--space-4);

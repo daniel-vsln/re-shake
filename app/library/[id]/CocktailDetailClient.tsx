@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
+import AvatarButton from '@/components/AvatarButton'
 import type { Cocktail } from '@/lib/mock-cocktails'
 import styles from './page.module.css'
 
@@ -51,6 +52,7 @@ export default function CocktailDetailClient({ cocktail }: Props) {
           <button type="button" className={s.navBtn} aria-label="Share">
             ↗
           </button>
+          <AvatarButton inline />
         </div>
       </div>
 

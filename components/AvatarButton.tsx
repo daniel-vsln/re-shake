@@ -8,6 +8,8 @@ import styles from './AvatarButton.module.css'
 
 const s = styles as Record<string, string>
 
+// Routes where the floating (absolute) instance is hidden.
+// Pages with their own header embed <AvatarButton inline /> instead.
 const HIDDEN_ROUTES = [
   '/auth/sign-in',
   '/auth/sign-up',
@@ -16,7 +18,12 @@ const HIDDEN_ROUTES = [
   '/auth/verify',
 ]
 
-export default function AvatarButton() {
+interface Props {
+  /** Render as an inline flow element inside an existing nav row. */
+  inline?: boolean
+}
+
+export default function AvatarButton({ inline = false }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const [user, setUser] = useState<User | null>(null)
@@ -35,8 +42,12 @@ export default function AvatarButton() {
     return () => listener.subscription.unsubscribe()
   }, [])
 
-  if (HIDDEN_ROUTES.includes(pathname)) return null
-  if (!ready) return <div className={s.placeholder} />
+  // Floating instance: hide on auth pages and pages that embed inline
+  if (!inline) {
+    const isHidden = HIDDEN_ROUTES.includes(pathname) || pathname.startsWith('/library/')
+    if (isHidden) return null
+    if (!ready) return <div className={s.placeholder} />
+  }
 
   const handleClick = () => {
     router.push(user ? '/profile' : '/auth/sign-in')
@@ -56,7 +67,7 @@ export default function AvatarButton() {
   return (
     <button
       type="button"
-      className={s.btn}
+      className={inline ? s.btnInline : s.btn}
       onClick={handleClick}
       aria-label={user ? 'Go to profile' : 'Sign in'}
     >
