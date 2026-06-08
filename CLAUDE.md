@@ -9,16 +9,18 @@ detailed breakdown.
 
 ## Stack
 
-| Layer      | Choice                                                  |
-| ---------- | ------------------------------------------------------- |
-| Framework  | Next.js 15.5 (App Router, SSG/SSR)                      |
-| Language   | TypeScript (strict)                                     |
-| Styling    | CSS Modules + CSS Custom Properties                     |
-| Font       | Space Grotesk via `next/font/google`                    |
-| Linting    | ESLint (`eslint-config-next`) + Prettier                |
-| Hooks      | Husky v9 + lint-staged (runs on pre-commit)             |
-| Data       | Static mock in `lib/mock-cocktails.ts` (no backend yet) |
-| Deployment | —                                                       |
+| Layer      | Choice                                                       |
+| ---------- | ------------------------------------------------------------ |
+| Framework  | Next.js 15.5 (App Router, SSG/SSR)                           |
+| Language   | TypeScript (strict)                                          |
+| Styling    | CSS Modules + CSS Custom Properties                          |
+| Font       | Space Grotesk via `next/font/google`                         |
+| Linting    | ESLint (`eslint-config-next`) + Prettier                     |
+| Hooks      | Husky v9 + lint-staged (runs on pre-commit)                  |
+| Auth       | Supabase Auth — Google OAuth + email/password                |
+| Database   | Supabase (Postgres) — migrations in `supabase/migrations/`   |
+| Data       | Mock data in `lib/mock-cocktails.ts` (real DB not wired yet) |
+| Deployment | Vercel (auto-deploy on push to main)                         |
 
 ---
 
@@ -26,55 +28,82 @@ detailed breakdown.
 
 ```
 re-shake/
-├── app/                        # Next.js App Router
+├── app/
 │   ├── design-tokens.css       # All CSS custom properties (single source of truth)
-│   ├── globals.css             # Reset + body styles, imports design-tokens.css
-│   ├── layout.tsx              # Root layout — Space Grotesk font injection
-│   ├── page.tsx                # Home / landing page
+│   ├── globals.css             # Reset + body styles
+│   ├── layout.tsx              # Root layout — Space Grotesk + AvatarButton
+│   ├── page.tsx                # Landing — scrollable photo strip + re:shake link
+│   ├── auth/
+│   │   ├── layout.tsx          # Shared auth card layout
+│   │   ├── auth.module.css     # Shared auth styles
+│   │   ├── callback/route.ts   # OAuth + password-reset code exchange
+│   │   ├── sign-in/page.tsx
+│   │   ├── sign-up/page.tsx
+│   │   ├── forgot-password/page.tsx
+│   │   ├── reset-password/page.tsx
+│   │   └── verify/page.tsx     # "Check your email" after sign-up
 │   ├── library/
-│   │   ├── page.tsx            # /library — cocktail grid + filters
+│   │   ├── page.tsx            # Cocktail grid + filters (AvatarButton in header)
 │   │   └── [id]/
-│   │       ├── page.tsx        # /library/[id] — server shell + generateStaticParams
-│   │       └── CocktailDetailClient.tsx  # interactive detail view
+│   │       ├── page.tsx        # Server shell + generateStaticParams
+│   │       └── CocktailDetailClient.tsx  # Detail view (AvatarButton inline in nav)
+│   ├── profile/
+│   │   └── page.tsx            # User profile — avatar, stats, sign out
 │   └── train/
 │       └── [id]/
-│           ├── page.tsx        # /train/[id] — server shell
-│           └── TrainingFlowClient.tsx    # full 3-step training flow + scoring
+│           ├── page.tsx        # Server shell
+│           └── TrainingFlowClient.tsx  # 3-step training flow + scoring
 │
 ├── components/
-│   ├── ui/                     # Atoms (presentational, reusable anywhere)
-│   │   ├── Badge.tsx           # category / difficulty / status badges
+│   ├── ui/                     # Atoms
+│   │   ├── Badge.tsx
 │   │   ├── Button.tsx          # 4 variants × 3 sizes, loading state
-│   │   ├── IngredientChip.tsx  # selectable chip with color swatch + category
-│   │   ├── Input.tsx           # text / number / search / textarea + UnitInput export
-│   │   ├── ProgressBar.tsx     # continuous / segmented / stepped variants
-│   │   ├── Tag.tsx             # selectable / removable / addable modes
-│   │   └── index.ts            # barrel export
+│   │   ├── IngredientChip.tsx
+│   │   ├── Input.tsx           # text / number / search + UnitInput export
+│   │   ├── ProgressBar.tsx     # continuous (value prop) / segmented / stepped
+│   │   ├── Tag.tsx
+│   │   └── index.ts
 │   │
-│   ├── Step1Ingredients.tsx    # pool-and-tray ingredient picker with search
-│   ├── Step2Measurements.tsx   # per-ingredient stepper + UnitInput rows
-│   ├── Step3Serving.tsx        # glass tiles + method tiles + garnish chips
-│   ├── TrainingLayout.tsx      # sticky header (progress + lives + timer) + footer nav
-│   ├── TrainingResult.tsx      # score hero + ingredient breakdown + serving check
-│   ├── AddCocktailForm.tsx     # full controlled form (create/edit cocktail)
-│   ├── CocktailCard.tsx        # library card + skeleton export
-│   ├── CollectionCard.tsx      # collection thumbnail (2×2 grid)
-│   ├── EmptyState.tsx          # illustration + CTA for empty screens
-│   ├── ImagePicker.tsx         # URL input or emoji picker
-│   ├── IngredientEditor.tsx    # editable ingredient rows (for AddCocktailForm)
-│   ├── OnboardingChecklist.tsx # step-by-step onboarding progress
-│   ├── StatTile.tsx            # KPI tile with optional colored value
-│   ├── ToolCard.tsx            # utility/tool card with emoji or image
-│   └── index.ts                # barrel export (all molecules + organisms)
+│   ├── AvatarButton.tsx        # Fixed top-right; anon→sign-in, authed→profile
+│   ├── AuthButton.tsx          # Google OAuth sign-in button
+│   ├── Step1Ingredients.tsx    # Tile grid ingredient picker
+│   ├── Step2Measurements.tsx   # Slider cards per ingredient
+│   ├── Step3Serving.tsx        # Glass + method tiles
+│   ├── TrainingLayout.tsx      # Header (progress bar + nav) + footer CTA
+│   ├── TrainingResult.tsx      # Score hero + breakdown + serving check
+│   ├── AddCocktailForm.tsx
+│   ├── CocktailCard.tsx
+│   ├── CollectionCard.tsx
+│   ├── EmptyState.tsx
+│   ├── ImagePicker.tsx
+│   ├── IngredientEditor.tsx
+│   ├── OnboardingChecklist.tsx
+│   ├── StatTile.tsx
+│   ├── ToolCard.tsx
+│   └── index.ts
 │
 ├── lib/
 │   ├── mock-cocktails.ts       # COCKTAILS array + getCocktail() + CATEGORIES
-│   └── utils.ts                # shared utilities (score, format, etc.)
+│   ├── utils.ts                # Shared utilities (score, format, etc.)
+│   ├── supabase.ts             # Browser client (lazy singleton via Proxy)
+│   ├── supabase-server.ts      # Server client (cookie-based, per-request)
+│   └── auth-validate.ts        # validateEmail / validatePassword / validateConfirm
+│
+├── middleware.ts               # Supabase session refresh on every request
 │
 ├── types/
-│   └── index.ts                # shared TypeScript interfaces
+│   ├── index.ts                # Shared TypeScript interfaces
+│   └── supabase.ts             # Auto-generated DB types (supabase gen types)
 │
-└── design/                     # original Claude Design HTML/JSX prototypes (reference only)
+├── supabase/
+│   ├── migrations/
+│   │   ├── 20260604000001_initial_schema.sql
+│   │   ├── 20260604000002_rls.sql
+│   │   └── 20260604000003_functions.sql
+│   ├── seed.sql                # Reference data for local dev
+│   └── README.md               # Migration workflow docs
+│
+└── public/                     # Static images (hero photos, etc.)
 ```
 
 ---
@@ -83,19 +112,13 @@ re-shake/
 
 ### CSS Modules access
 
-Every component that needs dynamic class names uses the cast pattern:
-
 ```tsx
 import styles from './Foo.module.css'
 const s = styles as Record<string, string>
-
-// Then use bracket notation safely:
-const cls = [s.root, s[variant], s[size]].filter(Boolean).join(' ')
+const cls = [s.root, s[variant]].filter(Boolean).join(' ')
 ```
 
 ### CSS Custom Properties in inline styles
-
-When a CSS variable needs to be set per-instance, cast the style object:
 
 ```tsx
 <div style={{ '--chip-swatch': color } as React.CSSProperties} />
@@ -103,204 +126,172 @@ When a CSS variable needs to be set per-instance, cast the style object:
 
 ### `'use client'` strategy
 
-- **Server components** (no interactivity): `Badge`, `ProgressBar`, `StatTile`, page shells (`app/**/page.tsx`)
-- **Client components** (everything with onClick/useState): everything else
-- Dynamic pages follow the **server shell + client child** pattern:
-  ```
-  app/library/[id]/page.tsx        ← server (generateStaticParams, data fetch)
-  app/library/[id]/CocktailDetailClient.tsx  ← 'use client' (router, state)
-  ```
+- **Server components**: `Badge`, `ProgressBar`, `StatTile`, page shells
+- **Client components**: everything with onClick/useState/useEffect
+- Dynamic pages use the **server shell + client child** pattern
 
-### Component `'use client'` rule of thumb
+---
 
-If a component imports Button, Tag, Input, or IngredientChip → it needs `'use client'`.
+## Supabase
+
+### Clients
+
+```ts
+// Client Component — import directly
+import { supabase } from '@/lib/supabase'
+await supabase.auth.getUser()
+await supabase.from('cocktails').select('*')
+
+// Server Component / Route Handler / Server Action
+import { createServerClient } from '@/lib/supabase-server'
+const db = await createServerClient()
+const { data } = await db.from('cocktails').select('*')
+```
+
+**Never** use `lib/supabase-server.ts` in Client Components.
+**Never** expose `SUPABASE_SERVICE_ROLE_KEY` — server-only, bypasses RLS.
+
+### Typed rows
+
+```ts
+import type { Tables } from '@/lib/supabase'
+type Cocktail = Tables<'cocktails'>
+type Ingredient = Tables<'ingredients'>
+```
+
+### Migrations workflow
+
+```bash
+# new change → never edit existing files
+supabase migration new <describe_change>
+# edit the new file, then:
+supabase db push
+supabase gen types typescript --linked > types/supabase.ts
+git add supabase/migrations/ types/supabase.ts
+git commit -m "db: <describe change>"
+```
+
+### Stored procedures
+
+| Function                                      | Called from                              |
+| --------------------------------------------- | ---------------------------------------- |
+| `handle_new_user()`                           | Trigger — auto-creates profile on signup |
+| `clone_cocktail(source_id, new_id, new_name)` | "Create Twist" button                    |
+| `record_training_result(...)`                 | After training flow completes            |
+
+---
+
+## Auth
+
+Google OAuth + email/password via Supabase Auth.
+
+### Flow
+
+| Route                   | Purpose                                |
+| ----------------------- | -------------------------------------- |
+| `/auth/sign-in`         | Email/password + Google OAuth          |
+| `/auth/sign-up`         | Registration → `/auth/verify`          |
+| `/auth/verify`          | "Check your email" screen              |
+| `/auth/forgot-password` | Sends reset link                       |
+| `/auth/reset-password`  | New password (from email link)         |
+| `/auth/callback`        | Exchanges OAuth/reset code for session |
+
+### AvatarButton visibility
+
+The `AvatarButton` in root layout is **hidden** on:
+`/auth/*`, `/profile`, `/library`, `/library/*`, `/train/*`
+
+Pages that need it embed `<AvatarButton inline />` in their own nav:
+
+- Library page header
+- Cocktail detail nav row
+
+### Validation
+
+All auth forms use `lib/auth-validate.ts`:
+
+- Validates on `onBlur`, clears on `onChange`, full check before API call
+- `validateEmail` — format check
+- `validatePassword` — min 8 chars
+- `validateConfirm` — match check
 
 ---
 
 ## Design System
 
-**Theme:** "Playful Game" variant — deep violet bg, pink primary, yellow secondary, violet accent.
+**Theme:** "Playful Game" — deep violet bg, pink primary, yellow secondary.
 
-All tokens live in `app/design-tokens.css`. Key groups:
+All tokens live in `app/design-tokens.css`.
 
 | Group      | Example vars                                                        |
 | ---------- | ------------------------------------------------------------------- |
 | Colors     | `--color-primary` `--color-secondary` `--color-accent` `--color-bg` |
 | Text       | `--text-primary` `--text-secondary` `--text-muted`                  |
-| Borders    | `--color-border` (= `--border-default`)                             |
 | Semantic   | `--color-success` `--color-error` `--color-warning`                 |
-| Typography | `--text-xs` → `--text-4xl` (mapped aliases in globals.css)          |
+| Typography | `--text-xs` → `--text-4xl`                                          |
 | Spacing    | `--space-1` (4px) → `--space-16` (64px)                             |
 | Radius     | `--radius-xs` (6px) → `--radius-full` (9999px)                      |
-| Shadows    | `--shadow-pop-sm/md/lg` — the signature 3D offset (no blur)         |
+| Shadows    | `--shadow-pop-sm/md/lg` — 3D offset, no blur                        |
 | Motion     | `--motion-fast` `--motion-normal` `--motion-slow`                   |
-| Z-index    | `--z-sticky` `--z-modal` `--z-toast` etc.                           |
+| Z-index    | `--z-sticky` `--z-modal` `--z-toast`                                |
 
-**Signature shadow style:**
-
-```css
-box-shadow: 0 6px 0 var(--color-shadow); /* 3D pop, offset-only, no blur */
-```
-
-**Font:** Space Grotesk (300–700) injected via CSS variable `--font-space-grotesk` in `layout.tsx`. Weight 800 is **not** available.
-
----
-
-## Data Layer
-
-Currently: static mock data in `lib/mock-cocktails.ts`.
-
-### Cocktail shape
-
-```ts
-interface Cocktail {
-  id: string // url slug (e.g. 'negroni')
-  name: string
-  category: string // 'Classics' | 'Contemporary' | 'Sours' | ...
-  difficulty: 'easy' | 'medium' | 'hard'
-  prepTime: string // '3 min'
-  abv: number // percent
-  image: string // emoji or URL
-  glass: string // id matching GLASS_OPTIONS in TrainingFlowClient
-  method: string // id matching METHOD_OPTIONS
-  garnish: string
-  notes?: string
-  ingredients: { id; name; amount; unit; emoji?; color? }[]
-  tags?: string[]
-}
-```
-
-### Adding a cocktail
-
-1. Add entry to `COCKTAILS` array in `lib/mock-cocktails.ts`
-2. Ensure all ingredient IDs exist in `ALL_INGREDIENTS` in `TrainingFlowClient.tsx`
-3. No other changes needed — `generateStaticParams` auto-picks up new IDs
+**Signature shadow:** `box-shadow: 0 6px 0 var(--color-shadow);`
+**Font:** Space Grotesk — max weight **700** (not 800).
 
 ---
 
 ## Pages
 
-| Route           | File                        | Notes                                               |
-| --------------- | --------------------------- | --------------------------------------------------- |
-| `/`             | `app/page.tsx`              | Static landing, `Link` to /library                  |
-| `/library`      | `app/library/page.tsx`      | `'use client'`, filter state local                  |
-| `/library/[id]` | `app/library/[id]/page.tsx` | Server shell; client in `CocktailDetailClient.tsx`  |
-| `/train/[id]`   | `app/train/[id]/page.tsx`   | Server shell; all logic in `TrainingFlowClient.tsx` |
+| Route           | Notes                                                      |
+| --------------- | ---------------------------------------------------------- |
+| `/`             | Photo strip landing, `re:shake` link bottom-right          |
+| `/library`      | Grid + category/difficulty filters, AvatarButton in header |
+| `/library/[id]` | Hero card, ingredients, serving, CTA to train              |
+| `/train/[id]`   | 3-step flow; scoring: 40% ingredients + 60% measurements   |
+| `/profile`      | Avatar, stats tiles, sign out                              |
+| `/auth/*`       | See Auth section                                           |
 
-### Training flow scoring (in `TrainingFlowClient.tsx`)
+---
 
-- **40%** ingredient selection accuracy (correct picks − false positive penalty)
-- **60%** measurement accuracy (exact = 1pt, within ±5ml = 0.5pt, otherwise 0)
-- Serving (glass/method) shown in result breakdown but doesn't affect score yet
+## Data Layer
+
+Mock data still drives the UI (`lib/mock-cocktails.ts`). DB schema is designed and migrations are applied, but Next.js pages have not been wired to Supabase queries yet.
+
+### Adding a cocktail (mock)
+
+1. Add to `COCKTAILS` in `lib/mock-cocktails.ts`
+2. Ensure ingredient IDs exist in `ALL_INGREDIENTS` in `TrainingFlowClient.tsx`
+3. `generateStaticParams` picks it up automatically
 
 ---
 
 ## Dev Commands
 
 ```bash
-npm run dev          # start dev server on :3000
-npm run build        # production build (runs tsc + Next.js)
+npm run dev          # dev server (port from launch.json)
+npm run build        # production build
 npm run lint         # ESLint
-npm run format       # Prettier --write on all files
+npm run format       # Prettier --write
 npx tsc --noEmit     # type-check only
+
+supabase db push                                    # apply migrations
+supabase gen types typescript --linked > types/supabase.ts
 ```
 
-Git remote uses SSH alias:
+Git remote:
 
 ```bash
 git push git@github-personal:daniel-vsln/re-shake.git main
-```
-
-Pre-commit hook runs ESLint + Prettier via lint-staged automatically.
-
----
-
-## Component API Quick Reference
-
-### Button
-
-```tsx
-<Button
-  variant="primary|secondary|ghost|danger"
-  size="sm|md|lg"
-  loading
-  fullWidth
-  leftIcon="←"
-  onClick={fn}
->
-  Label
-</Button>
-```
-
-### Badge
-
-```tsx
-<Badge tone="category|difficulty|status" value="spirit|easy|correct" compact />
-```
-
-### Tag
-
-```tsx
-<Tag selectable selected onToggle={fn} icon="🍋">Label</Tag>
-<Tag removable onRemove={fn}>Label</Tag>
-```
-
-### Input / UnitInput
-
-```tsx
-<Input type="text|number|search" value placeholder onChange onClear error />
-<UnitInput value unit step min max error onChange />
-```
-
-### ProgressBar
-
-```tsx
-<ProgressBar variant="continuous" percent={75} />
-<ProgressBar variant="stepped" steps={['A','B','C']} currentStep={1} />
-```
-
-### CocktailCard
-
-```tsx
-<CocktailCard
-  id
-  name
-  category
-  difficulty
-  glassType
-  ingredientCount
-  masteryPercent
-  emoji
-  stars
-  isFavorite
-  onFavoriteToggle={fn}
-  onClick={fn}
-/>
-```
-
-### TrainingResult
-
-```tsx
-<TrainingResult
-  cocktailName
-  score
-  tolerance={5}
-  ingredients={[{ id, name, unit, userValue, correctValue, emoji, color }]}
-  serving={[{ label, value, correct }]}
-  rewards={{ gems, xp, streak }}
-  onTryAgain
-  onNext
-  onBackToLibrary
-/>
 ```
 
 ---
 
 ## Known Gotchas
 
-- `Badge` `value` prop expects specific string literals (`'spirit'`, `'easy'`, `'correct'`…). When passing from `Cocktail.category` (a plain string), cast with `as never` or extend the union type.
-- `CocktailCard` `category` prop is similarly typed — use `as never` for mock data that doesn't match the exact union.
-- Space Grotesk max weight is 700. Don't use `800` in `next/font` config.
-- CSS Module classes that need bracket access (e.g., `s[variant]`) require the `Record<string, string>` cast — TypeScript won't allow it otherwise.
-- `app/design-tokens.css` uses `--color-border` but the raw token is `--border-default`. An alias `--color-border: var(--border-default)` is defined in `globals.css`.
-- The `design/` folder contains original HTML/JSX prototypes. Do not import from there — it's reference only.
+- `Badge` / `CocktailCard` `category` props expect specific string literals — cast with `as never` when passing plain strings from mock data.
+- Space Grotesk max weight is **700**. Don't use `800` in `next/font` config.
+- CSS Module dynamic classes require `Record<string, string>` cast.
+- `--color-border` is an alias for `--border-default` (defined in `globals.css`).
+- `supabase` export in `lib/supabase.ts` is a **lazy Proxy** — safe to import in any component, client is only created on first access in the browser. Do not call at module level in server code.
+- `ProgressBar` continuous variant uses `value` prop (not `percent`).
+- `design/` folder — reference prototypes only, do not import from there.
