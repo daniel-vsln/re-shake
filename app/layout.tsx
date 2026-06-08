@@ -18,8 +18,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={spaceGrotesk.variable}>
       <body>
-        {children}
-        <AvatarButton />
+        <div style={{ position: 'relative' }}>
+          {children}
+          <AvatarButton />
+        </div>
       </body>
     </html>
   )

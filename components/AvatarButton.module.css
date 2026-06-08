@@ -1,7 +1,8 @@
 .btn {
-  position: fixed;
+  position: absolute;
   top: var(--space-4);
-  right: var(--space-4);
+  /* stays inside the 480px content column on any viewport width */
+  right: max(var(--space-4), calc((100% - 480px) / 2 + var(--space-4)));
   z-index: var(--z-sticky);
 
   width: 40px;
@@ -39,11 +40,10 @@
   letter-spacing: 0.02em;
 }
 
-/* reserve space while loading so layout doesn't shift */
 .placeholder {
-  position: fixed;
+  position: absolute;
   top: var(--space-4);
-  right: var(--space-4);
+  right: max(var(--space-4), calc((100% - 480px) / 2 + var(--space-4)));
   width: 40px;
   height: 40px;
 }

@@ -1,15 +1,24 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import styles from './AvatarButton.module.css'
 
 const s = styles as Record<string, string>
 
+const HIDDEN_ROUTES = [
+  '/auth/sign-in',
+  '/auth/sign-up',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+  '/auth/verify',
+]
+
 export default function AvatarButton() {
   const router = useRouter()
+  const pathname = usePathname()
   const [user, setUser] = useState<User | null>(null)
   const [ready, setReady] = useState(false)
 
@@ -26,6 +35,7 @@ export default function AvatarButton() {
     return () => listener.subscription.unsubscribe()
   }, [])
 
+  if (HIDDEN_ROUTES.includes(pathname)) return null
   if (!ready) return <div className={s.placeholder} />
 
   const handleClick = () => {
