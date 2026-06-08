@@ -44,7 +44,10 @@ export default function AvatarButton({ inline = false }: Props) {
 
   // Floating instance: hide on auth pages and pages that embed inline
   if (!inline) {
-    const isHidden = HIDDEN_ROUTES.includes(pathname) || pathname.startsWith('/library/')
+    const isHidden =
+      HIDDEN_ROUTES.includes(pathname) ||
+      pathname === '/library' ||
+      pathname.startsWith('/library/')
     if (isHidden) return null
     if (!ready) return <div className={s.placeholder} />
   }

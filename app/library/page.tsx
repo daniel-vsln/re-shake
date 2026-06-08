@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import CocktailCard from '@/components/CocktailCard'
+import AvatarButton from '@/components/AvatarButton'
 import { COCKTAILS, CATEGORIES } from '@/lib/mock-cocktails'
 import styles from './page.module.css'
 
@@ -33,8 +34,11 @@ export default function LibraryPage() {
   return (
     <div className={s.root}>
       <header className={s.header}>
-        <h1 className={s.title}>Library</h1>
-        <p className={s.subtitle}>{COCKTAILS.length} recipes · tap to train</p>
+        <div>
+          <h1 className={s.title}>Library</h1>
+          <p className={s.subtitle}>{COCKTAILS.length} recipes · tap to train</p>
+        </div>
+        <AvatarButton inline />
       </header>
 
       <div className={s.filters}>
