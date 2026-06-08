@@ -3,27 +3,31 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { validateEmail } from '@/lib/auth-validate'
 import styles from '../auth.module.css'
 
 const s = styles as Record<string, string>
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
-  const [error, setError] = useState('')
+  const [emailErr, setEmailErr] = useState('')
+  const [apiError, setApiError] = useState('')
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
-    setLoading(true)
+    const eErr = validateEmail(email)
+    setEmailErr(eErr)
+    if (eErr) return
 
+    setApiError('')
+    setLoading(true)
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${location.origin}/auth/callback?next=/auth/reset-password`,
     })
-
     if (error) {
-      setError(error.message)
+      setApiError(error.message)
       setLoading(false)
     } else {
       setSent(true)
@@ -47,11 +51,11 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <form className={s.form} onSubmit={handleSubmit}>
+    <form className={s.form} onSubmit={handleSubmit} noValidate>
       <h1 className={s.heading}>Reset password</h1>
       <p className={s.sub}>Enter your email and we&apos;ll send a reset link.</p>
 
-      {error && <p className={s.error}>{error}</p>}
+      {apiError && <p className={s.error}>{apiError}</p>}
 
       <div className={s.field}>
         <label className={s.label} htmlFor="email">
@@ -60,13 +64,17 @@ export default function ForgotPasswordPage() {
         <input
           id="email"
           type="email"
-          className={s.input}
+          className={`${s.input} ${emailErr ? s.inputError : ''}`}
           placeholder="you@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          onChange={(e) => {
+            setEmail(e.target.value)
+            if (emailErr) setEmailErr('')
+          }}
+          onBlur={() => setEmailErr(validateEmail(email))}
           autoComplete="email"
         />
+        {emailErr && <span className={s.fieldError}>{emailErr}</span>}
       </div>
 
       <button type="submit" className={s.submitBtn} disabled={loading}>

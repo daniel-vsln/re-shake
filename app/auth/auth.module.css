@@ -185,6 +185,14 @@
   cursor: not-allowed;
 }
 
+/* ── FIELD-LEVEL ERROR ── */
+.fieldError {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-error);
+  margin-top: 2px;
+}
+
 /* ── ERROR / SUCCESS BANNERS ── */
 .error {
   padding: var(--space-3) var(--space-4);

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { validateEmail, validatePassword } from '@/lib/auth-validate'
 import styles from '../auth.module.css'
 
 const s = styles as Record<string, string>
@@ -12,19 +13,25 @@ export default function SignInPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [emailErr, setEmailErr] = useState('')
+  const [passwordErr, setPasswordErr] = useState('')
+  const [apiError, setApiError] = useState('')
   const [loading, setLoading] = useState(false)
   const [oauthLoading, setOauthLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
+    const eErr = validateEmail(email)
+    const pErr = validatePassword(password)
+    setEmailErr(eErr)
+    setPasswordErr(pErr)
+    if (eErr || pErr) return
+
+    setApiError('')
     setLoading(true)
-
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-
     if (error) {
-      setError(error.message)
+      setApiError(error.message)
       setLoading(false)
     } else {
       router.push('/library')
@@ -41,10 +48,10 @@ export default function SignInPage() {
   }
 
   return (
-    <form className={s.form} onSubmit={handleSubmit}>
+    <form className={s.form} onSubmit={handleSubmit} noValidate>
       <h1 className={s.heading}>Welcome back</h1>
 
-      {error && <p className={s.error}>{error}</p>}
+      {apiError && <p className={s.error}>{apiError}</p>}
 
       <div className={s.field}>
         <label className={s.label} htmlFor="email">
@@ -53,13 +60,17 @@ export default function SignInPage() {
         <input
           id="email"
           type="email"
-          className={s.input}
+          className={`${s.input} ${emailErr ? s.inputError : ''}`}
           placeholder="you@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          onChange={(e) => {
+            setEmail(e.target.value)
+            if (emailErr) setEmailErr('')
+          }}
+          onBlur={() => setEmailErr(validateEmail(email))}
           autoComplete="email"
         />
+        {emailErr && <span className={s.fieldError}>{emailErr}</span>}
       </div>
 
       <div className={s.field}>
@@ -69,13 +80,17 @@ export default function SignInPage() {
         <input
           id="password"
           type="password"
-          className={s.input}
+          className={`${s.input} ${passwordErr ? s.inputError : ''}`}
           placeholder="••••••••"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          onChange={(e) => {
+            setPassword(e.target.value)
+            if (passwordErr) setPasswordErr('')
+          }}
+          onBlur={() => setPasswordErr(validatePassword(password))}
           autoComplete="current-password"
         />
+        {passwordErr && <span className={s.fieldError}>{passwordErr}</span>}
         <Link href="/auth/forgot-password" className={s.forgotLink}>
           Forgot password?
         </Link>
