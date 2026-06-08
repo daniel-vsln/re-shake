@@ -7,11 +7,6 @@
   margin: 0 auto;
 }
 
-.topBar {
-  display: flex;
-  justify-content: flex-end;
-}
-
 /* ── HERO ── */
 .hero {
   display: flex;
