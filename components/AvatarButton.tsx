@@ -16,6 +16,7 @@ const HIDDEN_ROUTES = [
   '/auth/forgot-password',
   '/auth/reset-password',
   '/auth/verify',
+  '/profile',
 ]
 
 interface Props {
