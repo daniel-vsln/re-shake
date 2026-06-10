@@ -1,5 +1,6 @@
 'use client'
 
+import { ingredientImageUrl } from '@/lib/utils'
 import styles from './Step2Measurements.module.css'
 
 const s = styles as Record<string, string>
@@ -8,8 +9,7 @@ export interface MeasurementSpec {
   id: string
   name: string
   unit: string
-  emoji?: string
-  color?: string
+  color?: string | null
   hint?: string
   step?: number
   min?: number
@@ -66,14 +66,8 @@ export default function Step2Measurements({
           return (
             <div key={ing.id} className={`${s.card} ${isFilled ? s.cardFilled : ''}`}>
               <div className={s.cardTop}>
-                <span
-                  className={s.icon}
-                  style={
-                    { background: ing.color ?? 'var(--color-surface-3)' } as React.CSSProperties
-                  }
-                >
-                  {ing.emoji ?? '🫙'}
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={ingredientImageUrl(ing.id)} alt="" className={s.icon} />
 
                 <div className={s.meta}>
                   <span className={s.name}>{ing.name}</span>

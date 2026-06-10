@@ -117,6 +117,15 @@ export function mcx(
 }
 
 // ─────────────────────────────────────────────
+// Ingredient helpers
+// ─────────────────────────────────────────────
+
+/** Derive the static asset path for an ingredient image. */
+export function ingredientImageUrl(id: string): string {
+  return `/ingredients/${id}.png`
+}
+
+// ─────────────────────────────────────────────
 // Data helpers
 // ─────────────────────────────────────────────
 

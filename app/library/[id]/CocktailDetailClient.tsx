@@ -1,9 +1,9 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import Button from '@/components/ui/Button'
 import AvatarButton from '@/components/AvatarButton'
-import type { Cocktail } from '@/lib/mock-cocktails'
+import type { Cocktail } from '@/lib/cocktails'
+import { ingredientImageUrl } from '@/lib/utils'
 import styles from './page.module.css'
 
 const s = styles as Record<string, string>
@@ -26,16 +26,9 @@ const DIFF_LABEL: Record<string, string> = {
   hard: '●●● Hard',
 }
 
-const SERVING_ICONS: Record<string, string> = {
-  method: '🥄',
-  glass: '🥃',
-  garnish: '🍊',
-  ice: '🧊',
-}
-
 export default function CocktailDetailClient({ cocktail }: Props) {
   const router = useRouter()
-  const gradient = CATEGORY_GRADIENT[cocktail.category] ?? DEFAULT_GRADIENT
+  const gradient = CATEGORY_GRADIENT[cocktail.categories[0]] ?? DEFAULT_GRADIENT
   const starCount = cocktail.difficulty === 'easy' ? 1 : cocktail.difficulty === 'medium' ? 2 : 3
 
   return (
@@ -61,7 +54,8 @@ export default function CocktailDetailClient({ cocktail }: Props) {
         <div className={s.heroTop}>
           <div className={s.heroBadges}>
             <span className={s.heroBadge}>
-              {cocktail.category === 'Classics' ? '👑' : '✦'} {cocktail.category.toUpperCase()}
+              {cocktail.categories[0] === 'classics' ? '👑' : '✦'}{' '}
+              {(cocktail.categories[0] ?? '').toUpperCase()}
             </span>
             <span className={s.heroBadge}>{DIFF_LABEL[cocktail.difficulty]}</span>
           </div>
@@ -116,12 +110,8 @@ export default function CocktailDetailClient({ cocktail }: Props) {
         <div className={s.ingredientList}>
           {cocktail.ingredients.map((ing) => (
             <div key={ing.id} className={s.ingredientRow}>
-              <span
-                className={s.ingIcon}
-                style={{ background: ing.color ?? 'var(--color-surface-3)' }}
-              >
-                {ing.emoji}
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={ingredientImageUrl(ing.id)} alt={ing.name} className={s.ingIcon} />
               <span className={s.ingName}>{ing.name}</span>
               <span className={s.ingPill}>
                 <span className={s.ingAmount}>{ing.amount}</span>

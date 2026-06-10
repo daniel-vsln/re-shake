@@ -1,5 +1,6 @@
 'use client'
 
+import { ingredientImageUrl } from '@/lib/utils'
 import styles from './TrainingResult.module.css'
 
 const s = styles as Record<string, string>
@@ -186,14 +187,8 @@ export default function TrainingResult({
 
             return (
               <div key={ing.id} className={s.row}>
-                <span
-                  className={s.rowIcon}
-                  style={
-                    { background: ing.color ?? 'var(--color-surface-3)' } as React.CSSProperties
-                  }
-                >
-                  {ing.emoji}
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={ingredientImageUrl(ing.id)} alt="" className={s.rowIcon} />
 
                 <div className={s.rowBody}>
                   <span className={s.rowName}>{ing.name}</span>

@@ -7,11 +7,12 @@ import Step1Ingredients from '@/components/Step1Ingredients'
 import Step2Measurements from '@/components/Step2Measurements'
 import Step3Serving from '@/components/Step3Serving'
 import TrainingResult from '@/components/TrainingResult'
-import type { Cocktail } from '@/lib/mock-cocktails'
+import type { Cocktail, IngredientDef } from '@/lib/cocktails'
 import type { ServingSelections } from '@/components/Step3Serving'
 
 interface Props {
   cocktail: Cocktail
+  allIngredients: IngredientDef[]
 }
 
 const STEPS = ['Ingredients', 'Measurements', 'Serving']
@@ -30,54 +31,6 @@ const METHOD_OPTIONS = [
   { id: 'stir', label: 'Stir', icon: '🥄' },
   { id: 'build', label: 'Build', icon: '🏗️' },
   { id: 'blend', label: 'Blend', icon: '🌀' },
-]
-
-const ALL_INGREDIENTS = [
-  { id: 'gin', name: 'Gin', category: 'spirit', emoji: '🫙', color: '#c8e6ff' },
-  { id: 'campari', name: 'Campari', category: 'liqueur', emoji: '🔴', color: '#ff3b30' },
-  { id: 'sweet-vermouth', name: 'Sweet Vermouth', category: 'wine', emoji: '🍷', color: '#8b1a1a' },
-  { id: 'tequila', name: 'Tequila', category: 'spirit', emoji: '🌵', color: '#f5e6a3' },
-  { id: 'triple-sec', name: 'Triple Sec', category: 'liqueur', emoji: '🍊', color: '#ffaa44' },
-  { id: 'lime-juice', name: 'Lime Juice', category: 'juice', emoji: '🍋', color: '#c8e63c' },
-  { id: 'bourbon', name: 'Bourbon', category: 'spirit', emoji: '🥃', color: '#c0732a' },
-  {
-    id: 'simple-syrup',
-    name: 'Simple Syrup',
-    category: 'sweetener',
-    emoji: '🍯',
-    color: '#f5d76e',
-  },
-  {
-    id: 'angostura',
-    name: 'Angostura Bitters',
-    category: 'bitters',
-    emoji: '💧',
-    color: '#5c1a00',
-  },
-  { id: 'vodka', name: 'Vodka', category: 'spirit', emoji: '🫙', color: '#e8e8e8' },
-  { id: 'espresso', name: 'Espresso', category: 'other', emoji: '☕', color: '#3b1f0a' },
-  { id: 'kahlua', name: 'Kahlúa', category: 'liqueur', emoji: '🍫', color: '#5c2c00' },
-  { id: 'bourbon-ws', name: 'Bourbon', category: 'spirit', emoji: '🥃', color: '#c0732a' },
-  { id: 'lemon-juice', name: 'Lemon Juice', category: 'juice', emoji: '🍋', color: '#f5e642' },
-  { id: 'egg-white', name: 'Egg White', category: 'other', emoji: '🥚', color: '#fffbf0' },
-  // distractors
-  { id: 'rum', name: 'Rum', category: 'spirit', emoji: '🏝️', color: '#d4a574' },
-  { id: 'dry-vermouth', name: 'Dry Vermouth', category: 'wine', emoji: '🥂', color: '#e8dcc8' },
-  { id: 'cointreau', name: 'Cointreau', category: 'liqueur', emoji: '🍊', color: '#ff8c00' },
-  {
-    id: 'syrup-simple-em',
-    name: 'Simple Syrup',
-    category: 'sweetener',
-    emoji: '🍯',
-    color: '#f5d76e',
-  },
-  {
-    id: 'simple-syrup-em',
-    name: 'Simple Syrup',
-    category: 'sweetener',
-    emoji: '🍯',
-    color: '#f5d76e',
-  },
 ]
 
 function scoreIngredients(
@@ -110,7 +63,7 @@ function scoreIngredients(
   return Math.round((ingredientScore * penalty * 0.4 + measurementScore * 0.6) * 100)
 }
 
-export default function TrainingFlowClient({ cocktail }: Props) {
+export default function TrainingFlowClient({ cocktail, allIngredients }: Props) {
   const router = useRouter()
   const [step, setStep] = useState(0)
   const [done, setDone] = useState(false)
@@ -149,8 +102,7 @@ export default function TrainingFlowClient({ cocktail }: Props) {
       unit: ing.unit,
       userValue: measurements[ing.id] ?? 0,
       correctValue: ing.amount,
-      emoji: ing.emoji,
-      color: ing.color,
+      color: ing.color ?? undefined,
     }))
 
     const servingResults = [
@@ -180,13 +132,12 @@ export default function TrainingFlowClient({ cocktail }: Props) {
 
   const selectedSpecs = selectedIngredients.map((id) => {
     const found = cocktail.ingredients.find((i) => i.id === id)
-    const def = ALL_INGREDIENTS.find((i) => i.id === id)
+    const def = allIngredients.find((i) => i.id === id)
     return {
       id,
       name: def?.name ?? id,
-      unit: found?.unit ?? 'ml',
-      emoji: def?.emoji,
-      color: def?.color,
+      unit: found?.unit ?? def?.unit ?? 'ml',
+      color: def?.color ?? undefined,
       step: 5,
       min: 0,
       max: 200,
@@ -208,7 +159,7 @@ export default function TrainingFlowClient({ cocktail }: Props) {
     >
       {step === 0 && (
         <Step1Ingredients
-          availableIngredients={ALL_INGREDIENTS}
+          availableIngredients={allIngredients}
           selectedIngredients={selectedIngredients}
           onToggle={(id) =>
             setSelectedIngredients((prev) =>

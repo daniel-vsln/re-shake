@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Input from '@/components/ui/Input'
+import { ingredientImageUrl } from '@/lib/utils'
 import styles from './Step1Ingredients.module.css'
 
 const s = styles as Record<string, string>
@@ -10,8 +11,7 @@ export interface IngredientDef {
   id: string
   name: string
   category?: string
-  emoji?: string
-  color?: string
+  color?: string | null
 }
 
 interface Step1IngredientsProps {
@@ -90,7 +90,8 @@ export default function Step1Ingredients({
                   }
                   onClick={() => onToggle(ing.id)}
                 >
-                  {ing.emoji && <span className={s.trayChipEmoji}>{ing.emoji}</span>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={ingredientImageUrl(ing.id)} alt="" className={s.trayChipImg} />
                   <span className={s.trayChipName}>{ing.name}</span>
                   <span className={s.trayChipX} aria-hidden="true">
                     ×
@@ -134,14 +135,8 @@ export default function Step1Ingredients({
                 className={s.tile}
                 onClick={() => onToggle(ing.id)}
               >
-                <span
-                  className={s.tileIcon}
-                  style={
-                    { background: ing.color ?? 'var(--color-surface-3)' } as React.CSSProperties
-                  }
-                >
-                  {ing.emoji ?? '🫙'}
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={ingredientImageUrl(ing.id)} alt="" className={s.tileIcon} />
                 <span className={s.tileName}>{ing.name}</span>
               </button>
             ))}
