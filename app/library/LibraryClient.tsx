@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useTransition, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import CocktailCard from '@/components/CocktailCard'
 import AvatarButton from '@/components/AvatarButton'
@@ -11,6 +11,15 @@ const s = styles as Record<string, string>
 
 const DIFFICULTY_ORDER: Record<string, number> = { easy: 0, medium: 1, hard: 2 }
 
+function navigateForward(push: () => void) {
+  if (typeof document === 'undefined' || !('startViewTransition' in document)) {
+    push()
+    return
+  }
+  document.documentElement.dataset.nav = 'forward'
+  document.startViewTransition(push)
+}
+
 interface Props {
   cocktails: Cocktail[]
   categories: { id: string; label: string }[]
@@ -18,6 +27,7 @@ interface Props {
 
 export default function LibraryClient({ cocktails, categories }: Props) {
   const router = useRouter()
+  const [, startTransition] = useTransition()
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [activeDifficulty, setActiveDifficulty] = useState<string | null>(null)
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
@@ -94,7 +104,9 @@ export default function LibraryClient({ cocktails, categories }: Props) {
                 emoji={c.image}
                 isFavorite={favorites.has(c.id)}
                 onFavoriteToggle={(next) => toggleFav(c.id, next)}
-                onClick={(id) => router.push(`/library/${id}`)}
+                onClick={(id) =>
+                  navigateForward(() => startTransition(() => router.push(`/library/${id}`)))
+                }
               />
             ))}
         </div>

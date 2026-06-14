@@ -1,5 +1,6 @@
 'use client'
 
+import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import AvatarButton from '@/components/AvatarButton'
 import type { Cocktail } from '@/lib/cocktails'
@@ -26,8 +27,18 @@ const DIFF_LABEL: Record<string, string> = {
   hard: '●●● Hard',
 }
 
+function navigateBack(back: () => void) {
+  if (typeof document === 'undefined' || !('startViewTransition' in document)) {
+    back()
+    return
+  }
+  document.documentElement.dataset.nav = 'back'
+  document.startViewTransition(back)
+}
+
 export default function CocktailDetailClient({ cocktail }: Props) {
   const router = useRouter()
+  const [, startTransition] = useTransition()
   const gradient = CATEGORY_GRADIENT[cocktail.categories[0]] ?? DEFAULT_GRADIENT
   const starCount = cocktail.difficulty === 'easy' ? 1 : cocktail.difficulty === 'medium' ? 2 : 3
 
@@ -35,7 +46,11 @@ export default function CocktailDetailClient({ cocktail }: Props) {
     <div className={s.root}>
       {/* ── NAV ── */}
       <div className={s.nav}>
-        <button type="button" className={s.navBtn} onClick={() => router.back()}>
+        <button
+          type="button"
+          className={s.navBtn}
+          onClick={() => navigateBack(() => startTransition(() => router.back()))}
+        >
           ←
         </button>
         <div className={s.navActions}>
