@@ -24,11 +24,22 @@ export async function GET(request: NextRequest) {
       }
     )
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    console.log(
+      `[callback] exchange | user=${data?.user?.email ?? 'none'} | error=${error?.message ?? 'none'}`
+    )
+    console.log(
+      `[callback] cookies-set=${redirectResponse.cookies
+        .getAll()
+        .map((c) => c.name)
+        .join(',')}`
+    )
     if (!error) {
       return redirectResponse
     }
+    console.log(`[callback] exchange failed, redirecting to sign-in`)
   }
 
+  console.log(`[callback] no code in request, redirecting to sign-in`)
   return NextResponse.redirect(`${origin}/auth/sign-in?error=auth`)
 }

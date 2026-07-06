@@ -22,7 +22,16 @@ export async function middleware(request: NextRequest) {
   )
 
   // Refresh session — do not remove this call
-  await supabase.auth.getUser()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+
+  const path = request.nextUrl.pathname
+  const sbCookies = request.cookies.getAll().filter((c) => c.name.startsWith('sb-'))
+  console.log(
+    `[middleware] ${path} | user=${user?.email ?? 'none'} | error=${error?.message ?? 'none'} | sb-cookies=${sbCookies.map((c) => c.name).join(',')}`
+  )
 
   return supabaseResponse
 }
