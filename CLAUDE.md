@@ -7,6 +7,13 @@ detailed breakdown.
 
 ---
 
+## Working Rules
+
+- **Never commit automatically.** Always ask the user before running `git commit`.
+  If they decline, ask again at the next logical checkpoint — don't drop it silently.
+
+---
+
 ## Stack
 
 | Layer      | Choice                                                       |
