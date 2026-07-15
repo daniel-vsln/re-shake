@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 import TrainingLayout from '@/components/TrainingLayout'
 import Step1Ingredients from '@/components/Step1Ingredients'
 import Step2Measurements from '@/components/Step2Measurements'
@@ -33,46 +34,43 @@ const METHOD_OPTIONS = [
   { id: 'blend', label: 'Blend', icon: '🌀' },
 ]
 
-function scoreIngredients(
+function computeScore(
   selected: string[],
-  correct: string[],
-  measurements: Record<string, number | string>,
-  cocktail: Cocktail
-): number {
-  const correctSet = new Set(correct)
+  cocktail: Cocktail,
+  measurements: Record<string, number | string>
+): { score: number; ingredientScore: number; measurementScore: number } {
+  const correctIds = cocktail.ingredients.map((i) => i.id)
+  const correctSet = new Set(correctIds)
   const selectedSet = new Set(selected)
 
-  const ingredientScore =
-    correct.reduce((acc, id) => {
-      return acc + (selectedSet.has(id) ? 1 : 0)
-    }, 0) / correct.length
-
+  const rawIngredient =
+    correctIds.reduce((acc, id) => acc + (selectedSet.has(id) ? 1 : 0), 0) / correctIds.length
   const falsePositives = selected.filter((id) => !correctSet.has(id)).length
-  const penalty = Math.max(0, 1 - falsePositives * 0.15)
+  const ingredientScore = rawIngredient * Math.max(0, 1 - falsePositives * 0.15)
 
   const measurementScore =
     cocktail.ingredients.reduce((acc, ing) => {
-      const user = Number(measurements[ing.id] ?? 0)
-      const correct = ing.amount
-      const diff = Math.abs(user - correct)
+      const diff = Math.abs(Number(measurements[ing.id] ?? 0) - ing.amount)
       if (diff === 0) return acc + 1
       if (diff <= 5) return acc + 0.5
       return acc
     }, 0) / cocktail.ingredients.length
 
-  return Math.round((ingredientScore * penalty * 0.4 + measurementScore * 0.6) * 100)
+  return {
+    score: Math.round((ingredientScore * 0.4 + measurementScore * 0.6) * 100),
+    ingredientScore,
+    measurementScore,
+  }
 }
 
 export default function TrainingFlowClient({ cocktail, allIngredients }: Props) {
   const router = useRouter()
   const [step, setStep] = useState(0)
-  const [done, setDone] = useState(false)
+  const [result, setResult] = useState<ReturnType<typeof computeScore> | null>(null)
 
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([])
   const [measurements, setMeasurements] = useState<Record<string, number | string>>({})
   const [serving, setServing] = useState<ServingSelections>({})
-
-  const correctIds = cocktail.ingredients.map((i) => i.id)
 
   const canGoNext =
     step === 0
@@ -83,18 +81,39 @@ export default function TrainingFlowClient({ cocktail, allIngredients }: Props) 
           )
         : serving.glass != null && serving.method != null
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < STEPS.length - 1) {
       setStep((s) => s + 1)
-    } else {
-      setDone(true)
+      return
+    }
+
+    const computed = computeScore(selectedIngredients, cocktail, measurements)
+    const servingCorrect = serving.glass === cocktail.glass && serving.method === cocktail.method
+
+    setResult(computed)
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (user) {
+      await supabase.rpc('record_training_result', {
+        p_cocktail_id: cocktail.id,
+        p_score: computed.score,
+        p_ingredient_score: computed.ingredientScore,
+        p_measurement_score: computed.measurementScore,
+        p_serving_correct: servingCorrect,
+        p_selected_ingredients: selectedIngredients,
+        p_measurements: measurements,
+        p_serving_glass: serving.glass ?? '',
+        p_serving_method: serving.method ?? '',
+      })
     }
   }
 
   const handleBack = () => setStep((s) => s - 1)
 
-  if (done) {
-    const score = scoreIngredients(selectedIngredients, correctIds, measurements, cocktail)
+  if (result) {
+    const { score } = result
 
     const ingredientResults = cocktail.ingredients.map((ing) => ({
       id: ing.id,
@@ -119,7 +138,7 @@ export default function TrainingFlowClient({ cocktail, allIngredients }: Props) 
         serving={servingResults}
         onTryAgain={() => {
           setStep(0)
-          setDone(false)
+          setResult(null)
           setSelectedIngredients([])
           setMeasurements({})
           setServing({})

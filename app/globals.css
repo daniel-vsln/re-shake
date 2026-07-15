@@ -158,6 +158,12 @@ kbd {
   border-radius: var(--radius-sm);
 }
 
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  box-shadow: none;
+}
+
 /* ---------- SCROLLBAR ---------- */
 * {
   scrollbar-width: thin;

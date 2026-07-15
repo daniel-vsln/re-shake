@@ -133,7 +133,7 @@ export default function Step1Ingredients({
                 key={ing.id}
                 type="button"
                 className={s.tile}
-                onClick={() => onToggle(ing.id)}
+                onClick={() => handleTileClick(ing.id)}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={ingredientImageUrl(ing.id)} alt="" className={s.tileIcon} />
@@ -145,4 +145,9 @@ export default function Step1Ingredients({
       </div>
     </div>
   )
+
+  function handleTileClick(id: string) {
+    onToggle(id)
+    setQuery('')
+  }
 }
