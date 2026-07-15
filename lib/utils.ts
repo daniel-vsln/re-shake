@@ -125,6 +125,11 @@ export function ingredientImageUrl(id: string): string {
   return `/ingredients/${id}.png`
 }
 
+/** Derive the static asset path for a cocktail photo. */
+export function cocktailImageUrl(id: string): string {
+  return `/cocktails/${id}.jpg`
+}
+
 // ─────────────────────────────────────────────
 // Data helpers
 // ─────────────────────────────────────────────

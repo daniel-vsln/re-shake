@@ -1,7 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import Badge from '@/components/ui/Badge'
 import ProgressBar from '@/components/ui/ProgressBar'
+import { cocktailImageUrl } from '@/lib/utils'
 import styles from './CocktailCard.module.css'
 
 const s = styles as Record<string, string>
@@ -18,14 +20,16 @@ type Category =
 type Difficulty = 'easy' | 'medium' | 'hard'
 
 const CATEGORY_HUE: Record<string, string> = {
-  spirit: '#ffd23f',
-  mocktail: '#a8e063',
-  wine: '#ff5b9e',
-  beer: '#ffb74d',
-  classic: '#7a5cff',
-  modern: '#6ec5e9',
+  classics: '#ffd23f',
+  contemporary: '#7a5cff',
   tiki: '#ff9b3a',
-  afterDinner: '#b07a4f',
+  'from-movies': '#1a1a3e',
+  sours: '#c8e040',
+  highballs: '#6ec5e9',
+  'low-abv': '#a8e063',
+  shots: '#ff3d3d',
+  tropical: '#00c9b1',
+  brunch: '#ffaa5e',
 }
 
 interface CocktailCardProps {
@@ -60,6 +64,7 @@ export default function CocktailCard({
   stars = 0,
 }: CocktailCardProps) {
   const bg = hue ?? CATEGORY_HUE[category] ?? CATEGORY_HUE.spirit
+  const [imgError, setImgError] = useState(false)
 
   return (
     <article
@@ -92,9 +97,19 @@ export default function CocktailCard({
         >
           {isFavorite ? '♥' : '♡'}
         </button>
-        <span className={s.emoji} aria-hidden="true">
-          {emoji}
-        </span>
+        {imgError ? (
+          <span className={s.emoji} aria-hidden="true">
+            {emoji}
+          </span>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={cocktailImageUrl(id)}
+            alt=""
+            className={s.cardImg}
+            onError={() => setImgError(true)}
+          />
+        )}
       </div>
 
       <div className={s.body}>

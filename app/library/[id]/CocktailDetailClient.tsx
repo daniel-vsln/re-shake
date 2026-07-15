@@ -1,10 +1,10 @@
 'use client'
 
-import { useTransition } from 'react'
+import { useTransition, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AvatarButton from '@/components/AvatarButton'
 import type { Cocktail } from '@/lib/cocktails'
-import { ingredientImageUrl } from '@/lib/utils'
+import { ingredientImageUrl, cocktailImageUrl } from '@/lib/utils'
 import styles from './page.module.css'
 
 const s = styles as Record<string, string>
@@ -39,6 +39,7 @@ function navigateBack(back: () => void) {
 export default function CocktailDetailClient({ cocktail }: Props) {
   const router = useRouter()
   const [, startTransition] = useTransition()
+  const [heroImgError, setHeroImgError] = useState(false)
   const gradient = CATEGORY_GRADIENT[cocktail.categories[0]] ?? DEFAULT_GRADIENT
   const starCount = cocktail.difficulty === 'easy' ? 1 : cocktail.difficulty === 'medium' ? 2 : 3
 
@@ -86,7 +87,17 @@ export default function CocktailDetailClient({ cocktail }: Props) {
         <div className={s.heroBottom}>
           <h1 className={s.heroName}>{cocktail.name}</h1>
           <div className={s.heroEmoji} aria-hidden="true">
-            {cocktail.image}
+            {heroImgError ? (
+              cocktail.image
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={cocktailImageUrl(cocktail.id)}
+                alt=""
+                className={s.heroImg}
+                onError={() => setHeroImgError(true)}
+              />
+            )}
           </div>
         </div>
       </div>

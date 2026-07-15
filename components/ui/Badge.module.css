@@ -29,31 +29,38 @@
 }
 
 /* ---------- CATEGORY ---------- */
-.spirit {
+.classics {
   background: #ffd23f;
-} /* yellow */
-.mocktail {
-  background: #a8e063;
-} /* green */
-.wine {
-  background: #ff5b9e;
-} /* pink */
-.beer {
-  background: #ffb74d;
-} /* amber */
-.classic {
+}
+.contemporary {
   background: #7a5cff;
   color: var(--color-cream);
-}
-.modern {
-  background: #6ec5e9;
 }
 .tiki {
   background: #ff9b3a;
 }
-.afterDinner {
-  background: #b07a4f;
+.from-movies {
+  background: #1a1a3e;
   color: var(--color-cream);
+}
+.sours {
+  background: #c8e040;
+}
+.highballs {
+  background: #6ec5e9;
+}
+.low-abv {
+  background: #a8e063;
+}
+.shots {
+  background: #ff3d3d;
+  color: var(--color-cream);
+}
+.tropical {
+  background: #00c9b1;
+}
+.brunch {
+  background: #ffaa5e;
 }
 
 /* ---------- DIFFICULTY ---------- */
