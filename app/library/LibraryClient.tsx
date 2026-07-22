@@ -1,36 +1,37 @@
 'use client'
 
-import { useTransition, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import CocktailCard from '@/components/CocktailCard'
 import AvatarButton from '@/components/AvatarButton'
 import type { Cocktail } from '@/lib/cocktails'
+import { supabase } from '@/lib/supabase'
 import styles from './page.module.css'
 
 const s = styles as Record<string, string>
 
 const DIFFICULTY_ORDER: Record<string, number> = { easy: 0, medium: 1, hard: 2 }
 
-function navigateForward(push: () => void) {
-  if (typeof document === 'undefined' || !('startViewTransition' in document)) {
-    push()
-    return
-  }
-  document.documentElement.dataset.nav = 'forward'
-  document.startViewTransition(push)
-}
-
 interface Props {
   cocktails: Cocktail[]
   categories: { id: string; label: string }[]
+  progress: Record<string, number>
+  initialFavorites: string[]
+  isLoggedIn: boolean
 }
 
-export default function LibraryClient({ cocktails, categories }: Props) {
+export default function LibraryClient({
+  cocktails,
+  categories,
+  progress,
+  initialFavorites,
+  isLoggedIn,
+}: Props) {
   const router = useRouter()
-  const [, startTransition] = useTransition()
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [activeDifficulty, setActiveDifficulty] = useState<string | null>(null)
-  const [favorites, setFavorites] = useState<Set<string>>(new Set())
+  const [favorites, setFavorites] = useState<Set<string>>(new Set(initialFavorites))
+  const [loadingId, setLoadingId] = useState<string | null>(null)
 
   const filtered = cocktails.filter((c) => {
     if (activeCategory && !c.categories.includes(activeCategory)) return false
@@ -38,17 +39,36 @@ export default function LibraryClient({ cocktails, categories }: Props) {
     return true
   })
 
-  const toggleFav = (id: string, next: boolean) => {
+  const toggleFav = async (id: string, next: boolean) => {
+    if (!isLoggedIn) {
+      router.push('/auth/sign-in')
+      return
+    }
+    // Optimistic update
     setFavorites((prev) => {
       const copy = new Set(prev)
       if (next) copy.add(id)
       else copy.delete(id)
       return copy
     })
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return
+    if (next) {
+      await supabase.from('user_favorites').insert({ user_id: user.id, cocktail_id: id })
+    } else {
+      await supabase.from('user_favorites').delete().eq('user_id', user.id).eq('cocktail_id', id)
+    }
   }
 
   return (
     <div className={s.root}>
+      {loadingId && (
+        <div className={s.navOverlay} aria-hidden="true">
+          <div className={s.navSpinner} />
+        </div>
+      )}
       <header className={s.header}>
         <div>
           <h1 className={s.title}>Library</h1>
@@ -100,13 +120,14 @@ export default function LibraryClient({ cocktails, categories }: Props) {
                 difficulty={c.difficulty}
                 glassType={c.glass}
                 ingredientCount={c.ingredients.length}
-                masteryPercent={0}
+                masteryPercent={progress[c.id] ?? 0}
                 emoji={c.image}
                 isFavorite={favorites.has(c.id)}
                 onFavoriteToggle={(next) => toggleFav(c.id, next)}
-                onClick={(id) =>
-                  navigateForward(() => startTransition(() => router.push(`/library/${id}`)))
-                }
+                onClick={(id) => {
+                  setLoadingId(id)
+                  router.push(`/library/${id}`)
+                }}
               />
             ))}
         </div>

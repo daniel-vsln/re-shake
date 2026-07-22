@@ -1,16 +1,19 @@
 'use client'
 
-import { useTransition, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import AvatarButton from '@/components/AvatarButton'
 import type { Cocktail } from '@/lib/cocktails'
 import { ingredientImageUrl, cocktailImageUrl } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
 import styles from './page.module.css'
 
 const s = styles as Record<string, string>
 
 interface Props {
   cocktail: Cocktail
+  initialFavorite: boolean
+  isLoggedIn: boolean
 }
 
 const CATEGORY_GRADIENT: Record<string, string> = {
@@ -27,36 +30,64 @@ const DIFF_LABEL: Record<string, string> = {
   hard: '●●● Hard',
 }
 
-function navigateBack(back: () => void) {
-  if (typeof document === 'undefined' || !('startViewTransition' in document)) {
-    back()
-    return
-  }
-  document.documentElement.dataset.nav = 'back'
-  document.startViewTransition(back)
-}
-
-export default function CocktailDetailClient({ cocktail }: Props) {
+export default function CocktailDetailClient({ cocktail, initialFavorite, isLoggedIn }: Props) {
   const router = useRouter()
-  const [, startTransition] = useTransition()
   const [heroImgError, setHeroImgError] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(initialFavorite)
+  const [navigatingBack, setNavigatingBack] = useState(false)
   const gradient = CATEGORY_GRADIENT[cocktail.categories[0]] ?? DEFAULT_GRADIENT
   const starCount = cocktail.difficulty === 'easy' ? 1 : cocktail.difficulty === 'medium' ? 2 : 3
 
+  const toggleFav = async () => {
+    if (!isLoggedIn) {
+      router.push('/auth/sign-in')
+      return
+    }
+    const next = !isFavorite
+    setIsFavorite(next) // optimistic
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return
+    if (next) {
+      await supabase.from('user_favorites').insert({ user_id: user.id, cocktail_id: cocktail.id })
+    } else {
+      await supabase
+        .from('user_favorites')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('cocktail_id', cocktail.id)
+    }
+  }
+
   return (
     <div className={s.root}>
+      {navigatingBack && (
+        <div className={s.navOverlay} aria-hidden="true">
+          <div className={s.navSpinner} />
+        </div>
+      )}
       {/* ── NAV ── */}
       <div className={s.nav}>
         <button
           type="button"
           className={s.navBtn}
-          onClick={() => navigateBack(() => startTransition(() => router.back()))}
+          onClick={() => {
+            setNavigatingBack(true)
+            router.push('/library')
+          }}
         >
           ←
         </button>
         <div className={s.navActions}>
-          <button type="button" className={s.navBtn} aria-label="Favourite">
-            ♡
+          <button
+            type="button"
+            className={s.navBtn}
+            aria-label={isFavorite ? 'Remove from favourites' : 'Add to favourites'}
+            aria-pressed={isFavorite}
+            onClick={toggleFav}
+          >
+            {isFavorite ? '♥' : '♡'}
           </button>
           <button type="button" className={s.navBtn} aria-label="Share">
             ↗

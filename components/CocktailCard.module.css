@@ -21,12 +21,6 @@
     box-shadow var(--duration-fast) var(--ease-standard);
 }
 
-.root:hover {
-  transform: translateY(-3px);
-  box-shadow:
-    0 8px 0 var(--color-ink),
-    0 16px 32px rgba(122, 92, 255, 0.25);
-}
 .root:active {
   transform: translateY(1px);
   box-shadow: var(--shadow-pop-sm);
@@ -80,6 +74,7 @@
   position: absolute;
   top: 10px;
   right: 10px;
+  z-index: 2;
   width: 34px;
   height: 34px;
   border-radius: 50%;
@@ -95,9 +90,6 @@
   transition:
     transform var(--duration-fast) var(--ease-spring),
     color var(--duration-fast) var(--ease-standard);
-}
-.favBtn:hover {
-  transform: scale(1.1);
 }
 .favBtn.favOn {
   color: var(--color-primary);

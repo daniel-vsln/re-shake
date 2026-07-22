@@ -412,6 +412,24 @@ export type Database = {
           },
         ]
       }
+      user_favorites: {
+        Row: {
+          cocktail_id: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          cocktail_id: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          cocktail_id?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

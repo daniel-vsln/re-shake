@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getCocktail, getAllCocktailIds } from '@/lib/cocktails'
+import { createServerClient } from '@/lib/supabase-server'
 import CocktailDetailClient from './CocktailDetailClient'
 
 interface Props {
@@ -15,5 +16,28 @@ export default async function CocktailDetailPage({ params }: Props) {
   const { id } = await params
   const cocktail = await getCocktail(id)
   if (!cocktail) notFound()
-  return <CocktailDetailClient cocktail={cocktail} />
+
+  const supabase = await createServerClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  let initialFavorite = false
+  if (user) {
+    const { data } = await supabase
+      .from('user_favorites')
+      .select('cocktail_id')
+      .eq('user_id', user.id)
+      .eq('cocktail_id', id)
+      .maybeSingle()
+    initialFavorite = !!data
+  }
+
+  return (
+    <CocktailDetailClient
+      cocktail={cocktail}
+      initialFavorite={initialFavorite}
+      isLoggedIn={!!user}
+    />
+  )
 }
